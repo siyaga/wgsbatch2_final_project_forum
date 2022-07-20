@@ -1,0 +1,52 @@
+<div class="container">
+    <div class="row">
+        <h1 class="page-header">Registrasi</h1>
+        <!-- Menampilkan Error Pada Penginputan-->
+        <% if (typeof errors != 'undefined') { %>
+        <div class="alert alert-danger" role="alert">
+            <ul>
+                <% errors.forEach(error => { %>
+                <li><%= error.msg %></li>
+                <% }) %>
+            </ul>
+        </div>
+        <% } %>
+    </div>
+</div>
+
+<% let isiData; %>
+<% if(locals.data) { isiData = data} %>
+
+<form method="POST" action="/register" class="mt-4">
+    <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="username" aria-describedby="username" name="username"
+            value="<%= data?.username %>" required>
+    </div>
+    <!-- <div class="mb-3">
+        <label for="nama" class="form-label">Nama Lengkap</label>
+        <input type="text" class="form-control" id="nama" aria-describedby="nama" name="nama" required>
+    </div>
+    <div class="mb-3">
+        <label for="mobile" class="form-label">Nomor Telepon</label>
+        <input type="text" class="form-control" id="mobile" aria-describedby="mobile" name="mobile" required>
+    </div>
+    <div class="mb-3">
+        <label for="Email" class="form-label">Email</label>
+        <input type="Email" class="form-control" id="Email" aria-describedby="Email" name="Email" value="<%=  %> "
+            required>
+    </div> -->
+    <div class="mb-3">
+        <label for="Password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="Password" name="password" value="<%= data?.password %>"
+            placeholder="password" required>
+    </div>
+    <div class="mb-3">
+        <label for="Password" class="form-label">Comfirm Password</label>
+        <input type="password2" class="form-control" id="Password2" name="password" value="<%= data?.password2 %>"
+            placeholder="Comfirm Password" required>
+    </div>
+    <button type=" submit" class="btn btn-primary">Submit</button>
+</form>
+<div class="container">
+</div>
