@@ -2,12 +2,13 @@
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts')
 const fs = require('fs')
-
+const bcrypt = require('bcrypt')
 const login = require('./utils/login');
-const morgan = require('morgan');
-// const session = require('express-session');
-// const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const flash = require('express-flash');
 
+const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 const app = express()
 const port = 3000
 
@@ -29,6 +30,17 @@ app.use(expressLayouts);
 app.use(express.urlencoded({
     extended: true
 }));
+// Comfigure flash 
+app.use(cookieParser('secret'));
+app.use(session({
+    cookie: {
+        maxAge: 6000
+    },
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true,
+}));
+app.use(flash());
 // menggunakan log activity 
 app.use(morgan('dev'))
 app.set('layout', './layout/main-layout')
@@ -39,10 +51,18 @@ app.get('/', (req, res) => {
 
     res.render('home', {
         title: "Bahas Anime",
-        layout: "layout/main-layout"
+        layout: "layout/main-layout",
+        user: 'adi riyanto'
     })
 })
+app.get('/myforum', (req, res) => {
+    res.render('forum', {
+        title: "Home",
+        layout: "layout/main-layout",
+        forums
+    })
 
+})
 // Membuat Proses Register
 app.get('/users/register', (req, res) => {
 
@@ -55,59 +75,109 @@ app.get('/users/register', (req, res) => {
 })
 
 // Membuat Proses login Page 
-app.get('/users/login', (req, res) => {
+app.get('/users/login', async (req, res) => {
 
+
+    // const cariUser = await pool.query(`SELECT username,password FROM tb_users WHERE username = '${valueUsername}'`)
+    // const cariUsername = cariUser.rows[0]
+    // const cariPassword = cariPassword.rows[1]
 
     res.render('login', {
         title: "BA Login",
-        layout: "layout/main-layout"
+        layout: "layout/main-layout",
+        msg: req.flash('msg')
     })
 })
 
+app.post('/login', [], async (req, res) => {
+    if (!errors.isEmpty()) {
 
 
-app.post('/register', [
-    // body('username'.custom(async (user) => {
-    //         const quaryDuplicate = await pool.query(`Select nama FROM tb_user WHERE nama='${user}'`)
-    //         const duplikat = quaryDuplicate.rows[0]
+        res.render('register', {
+            title: 'Form Tambah Data Contact',
+            layout: 'layout/main-layout',
+            errors: errors.array(),
+            data: req.body
 
-    //         if (duplikat) {
-    //             throw new Error(`Username ${value} sudah di gunakan, mohon untuk di ganti`);
-    //         }
-    //         return true;
-    //     }),
-    //     check('email', 'Email tidak valid!').isEmail(),
-    //     check('mobile', 'Mobile tidak valid!').isMobilePhone('id-ID')
-    // )
-], async (req, res) => {
+        });
 
-    // const errors = validationResult(req);
-    // if (!errors.isEmpty()) {
-    //     res.render('register', {
-    //         title: 'BA Register',
-    //         layout: 'layout/main-layout',
-    //         errors: errors.array(),
-    //         dataOld: req.body
-    //     })
+    } else {
 
-    // } else {
-    try {
-        const username = req.body.username
-        const mobile = req.body.mobile
-        const password = req.body.password
 
-        const registerAdd = await pool.query(`INSERT INTO tb_user values ('${username}', '${password}')`)
-        registerAdd
-        res.redirect('/login')
-
-    } catch (err) {
-        console.error(err.message)
     }
 
-    // }
-
-
 })
+
+// Login Registrasi user
+app.post('/register', [
+    body('username').custom(async (valueUsername) => {
+
+        // Mencari nama yang sama di query
+        const queryDuplikat = await pool.query(`SELECT * FROM tb_users WHERE username = '${valueUsername}'`)
+        const duplikat = queryDuplikat.rows[0]
+
+        if (duplikat) {
+            throw new Error(`${valueUsername} sudah terdaftar! `);
+
+        }
+
+        return true;
+    }),
+    check('email', 'Email tidak valid!').isEmail(),
+    // Pengecekan password arus lebih dari 6 karakter
+    check('password', 'password harus lebih dari 6 karakter').isLength({
+        min: 6
+    }),
+    // Pengecekan password harus di ulang sama dengan password comfirm
+    body('password').custom((valuePassword, {
+        req
+    }) => {
+
+        if (valuePassword !== req.body.password2) {
+            throw new Error(`Password tidak sama, mohon isikan ulang`);
+        }
+        return true;
+    }),
+    // check('password' != 'password2', 'password tidak sama mohon isi ulang')
+    // check('mobile', 'No HP tidak valid!').isMobilePhone('id-ID')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+
+
+        res.render('register', {
+            title: 'Form Tambah Data Contact',
+            layout: 'layout/main-layout',
+            errors: errors.array(),
+            data: req.body
+
+        });
+
+    } else {
+        // addDataContact(req.body);
+        // addContact di postgre
+        try {
+            // Mengambil isi form yang di isikan oleh user
+            const username = req.body.username;
+            const nama = req.body.nama;
+            const email = req.body.email;
+            const password = req.body.password;
+            const passwordhash = bcrypt.hashSync(password, 10);
+            //Menggunakan query insert untuk memasukan data atau mengadd data
+            const dataAdd = await pool.query(`INSERT INTO tb_users(
+                username,nama,email, password) values ('${username}','${nama}','${email}','${passwordhash}') `)
+            dataAdd;
+            req.flash('msg', 'Selamat kamu telah terdaftar, Silakan Melakukan login')
+            res.redirect('/users/login');
+        } catch (err) {
+            console.error(err.message)
+        }
+
+    }
+
+
+});
+
 
 
 // Membuat Proses Category Page 

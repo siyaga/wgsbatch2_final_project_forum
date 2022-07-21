@@ -2,10 +2,18 @@
     <div class="row">
         <h1 class="page-header">Login</h1>
 
+        <% if (msg.length !== 0) { %>
+        <div class="alert alert-success" role="alert">
+            <%= msg %>
+        </div>
+        <% } %>
+
     </div>
 </div>
 
-<form class="mt-4">
+
+
+<form method="post" action="/login" class="mt-4">
     <div class="mb-3">
         <label for="username" class="form-label">Username</label>
         <input type="text" class="form-control" id="username" aria-describedby="username" name="username" required>
@@ -16,6 +24,6 @@
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
-<div class="container mt-4">
+<div class="container mt-4 ">
     <div class="row"><a href="/users/register">Belum punya akun ? daftar kelik disini</a></div>
 </div>
