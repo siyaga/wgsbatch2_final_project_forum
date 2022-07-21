@@ -1,0 +1,44 @@
+<div class="container">
+    <div class="row">
+        <h1 class="page-header">Add Sub Kategori</h1>
+        <!-- Menampilkan Error Pada Penginputan-->
+        <% if (typeof errors != 'undefined') { %>
+        <div class="alert alert-danger" role="alert">
+            <ul>
+                <% errors.forEach(error => { %>
+                <li><%= error.msg %></li>
+                <% }) %>
+            </ul>
+        </div>
+        <% } %>
+
+    </div>
+</div>
+
+<% let isiData; %>
+<% if(locals.data) { isiData = data} %>
+
+<form method="POST" action="/category" class="mt-4">
+    <select class="custom-select">
+        <option selected>Pilih Kategori</option>
+        <% if (categorys.length < 1 ) { %>
+        <p>Kategori Data Tidak Ada</p>
+        <% } else {%>
+        <% for(const category of categorys) { %>
+        <option value="1">One</option>
+        <% } %>
+        <% } %>
+    </select>
+
+
+    <div class="mb-3">
+        <label for="Title" class="form-label">Title</label>
+        <input type="text" class="form-control" id="Title" aria-describedby="Title" name="title" placeholder="Title"
+            value="<%= isiData?.Title %>" required>
+    </div>
+
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<div class="container">
+</div>

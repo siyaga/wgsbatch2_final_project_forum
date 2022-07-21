@@ -1,0 +1,36 @@
+<!-- <h1 class="text-center">Topik Terkini</h1>
+<% if (!post) { %>
+Forum tidak ada.<br> <a href="/home" class="alert-link fw-normal">&laquo;back to contact list</a>.
+<% } else {%>
+<% for(const post of posts) { %>
+<div class="card w-70 mt-4">
+    <div class="card-body">
+        <h5 class="card-title"><a href="/post/<%= post.id %> "><%= post.title %></a></h5>
+        <p class="card-text"><%= post.descrips %> </p>
+        <p class="card-text"><small class="text-muted"><%= post.date %></small></p>
+    </div>
+    <img src="..." class="card-img-bottom" alt="...">
+</div>
+<% } %>
+<% } %> -->
+
+<% if (!post) { %>
+Forum tidak ada.<br> <a href="/" class="alert-link fw-normal">&laquo;back to Forum list</a>.
+<% } else { %>
+<div class="card w-70 mt-4">
+    <div class="card-body">
+        <h5 class="card-title"><a href="/post/<%= post.id %> "><%= post.title %></a></h5>
+        <p class="card-text"><%= post.descrips %> </p>
+        <p class="card-text"><small class="text-muted"><%= post.date %></small></p>
+    </div>
+    <img src="..." class="card-img-bottom" alt="...">
+
+    <a href="/contact/edit/<%= contact.name %>" class="btn btn-primary"><i class="bi bi-pencil-square"></i>
+        Update</a>
+    <a href="/contact/delete/<%= contact.name %>" class="btn btn-danger"
+        onclick="return confirm('yakin Anda Menghapus <%= contact.name %>?')"><i class="bi bi-trash-fill"></i>
+        Delete</a>
+    <br>
+</div>
+<a href="/contact" class="card-link">&laquo; back to Forum list</a>
+<% } %>

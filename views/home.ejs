@@ -1,9 +1,15 @@
-<div class="card">
-    <h5 class="card-header">Featured</h5>
+<h1 class="text-center">Topik Terkini</h1>
+<% if (posts.length < 1 ) { %>
+<p>Categorys Data empty</p>
+<% } else {%>
+<% for(const post of posts) { %>
+<div class="card w-70 mt-4">
     <div class="card-body">
-        <h5><a href="#">Special title treatment</a></h5>
-        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-
+        <h5 class="card-title"><a href="/post/<%= post.id %> "><%= post.title %></a></h5>
+        <p class="card-text"><%= post.descrips %> </p>
+        <p class="card-text"><small class="text-muted"><%= post.date %></small></p>
     </div>
+    <img src="..." class="card-img-bottom" alt="...">
 </div>
-<!--<%= user %>-->
+<% } %>
+<% } %>
