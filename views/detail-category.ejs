@@ -1,0 +1,28 @@
+<% if (forums.length < 1 ) { %>
+<p>Forum diskusi tidak ada</p>
+<% } else {%>
+<% for(const forum of forums) { %>
+<h1 class="text-center">Diskusi Tentang
+    <%= capitalize.words(forum.title_category) %>
+</h1>
+<div class="card w-50 mt-4">
+    <div class="card-body">
+        <h5 class="card-title">
+            <%= forum.title_post %>
+        </h5>
+
+        <p><%= forum.content.substring(0, 50) %>... </p>
+
+        <p class="card-text"><small class="text-muted"> <%= forum.username %>
+                <%= moment(forum.date).format('yyyy-MM-DD') %>, <%= moment(forum.time).format('HH:MM') %></small></p>
+    </div>
+    <% if(forum.image === 'null' || forum.image === 'undefined') { %>
+
+    <% }else { %>
+    <img src="/image/<%= forum.image %>" class="card-img-bottom" alt="...">
+    <% } %>
+
+    <a href="/category/<%= forum.title_category %>/post/<%= forum.title_post %>" class="stretched-link"></a>
+</div>
+<% } %>
+<% } %>

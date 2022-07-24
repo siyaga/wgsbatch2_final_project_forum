@@ -1,0 +1,60 @@
+<div class="container">
+    <div class="row">
+        <h1 class="page-header">Add User</h1>
+        <!-- Menampilkan Error Pada Penginputan-->
+        <% if (typeof errors != 'undefined') { %>
+        <div class="alert alert-danger" role="alert">
+            <ul>
+                <% errors.forEach(error => { %>
+                <li><%= error.msg %></li>
+                <% }) %>
+            </ul>
+        </div>
+        <% } %>
+
+    </div>
+</div>
+
+<% let isiData; %>
+<% if(locals.data) { isiData = data} %>
+
+<form method="POST" action="/category" class="mt-4">
+    <div class="mb-3">
+        <label for="Title" class="form-label">Username</label>
+        <input type="text" class="form-control" id="Title" aria-describedby="Title" name="username"
+            placeholder="Username" value="<%= isiData?.title_category %>" required>
+    </div>
+    <div class="mb-3">
+        <label for="name" class="form-label">Nama Lengkap</label>
+        <input type="text" class="form-control" id="name" aria-describedby="name" name="name" placeholder="Nama Lengkap"
+            value="<%= isiData?.title_category %>" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" aria-describedby="email" name="email" placeholder="Email"
+            value="<%= isiData?.title_category %>" required>
+    </div>
+    <div class="mb-3">
+        <label for="Password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="Password" name="password" placeholder="password" required>
+    </div>
+    <div class="mb-3">
+        <label for="Password2" class="form-label">Comfirm Password</label>
+        <input type="password" class="form-control" id="Password2" name="password2" placeholder="Comfirm Password"
+            required>
+    </div>
+
+    <div class="mb-3">
+        <label for="image" class="form-label">Image </label>
+
+        <input type="file" class="form-control" id="image" name="image">
+
+    </div>
+
+
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<div class="container">
+</div>

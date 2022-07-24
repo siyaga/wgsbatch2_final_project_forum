@@ -12,7 +12,7 @@
         <tr>
             <th scope="col">No</th>
             <th scope="col text-center">Judul Forum</th>
-            <th scope="col text-center">Sub Kategori</th>
+            <th scope="col text-center">Kategori</th>
             <th scope="col text-center">Konten</th>
             <th scope="col text-center">Date</th>
             <th scope="col text-center">image</th>
@@ -31,25 +31,25 @@
         <tr>
             <!-- Memanggil dan nomor -->
             <th><%= i++ %> </th>
-            <td><%= forum.title %> </td>
-            <td><%= forum.title_sub_category %> </td< />
-            <td><%= forum.content %> </td>
-            <td><%= forum.date %> </td>
+            <td><%= forum.title_post %> </td>
+            <td><%= forum.title_category %> </td< />
+            <td><%= forum.content.substring(0, 50) %> </td>
+            <td><%= moment(forum.date).format('YYYY-MM-DD') %> <%= moment(forum.time).format('HH:MM') %> </td>
             <td><%= forum.image %> </td>
             <td><%= forum.username %> </td>
             <td>
                 <!-- View -->
-                <a href="/myforum/<%= forum.id %>" class="btn btn-primary badge mt-1 "><i
-                        class="bi bi-card-heading"></i>
+                <a href="/category/<%= forum.title_category %>/post/<%= forum.title_post %>"
+                    class="btn btn-primary badge mt-1 "><i class="bi bi-card-heading"></i>
                     View</a>
                 <br />
                 <!-- Menambahkan update dan delete  -->
-                <a href="/myforum/edit/<%= forum.id %>" class="btn btn-warning ml-1 badge mt-2"><i
+                <a href="/myforum/edit/<%= forum.title_post %>" class="btn btn-warning ml-1 badge mt-2"><i
                         class="bi bi-pencil-square"></i>
                     Update</a>
                 <br />
-                <a href="/myforum/delete/<%= forum.id %>" class="btn btn-danger badge mt-2"
-                    onclick="return confirm('yakin Anda Menghapus <%= forum.sub_category %>?')"><i
+                <a href="/myforum/delete/<%= forum.title_post %>" class="btn btn-danger badge mt-2"
+                    onclick="return confirm('yakin Anda Menghapus Forum tentang  <%= forum.title_post %>?')"><i
                         class="bi bi-trash-fill"></i>
                     Delete</a>
             </td>

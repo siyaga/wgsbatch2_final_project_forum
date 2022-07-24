@@ -1,6 +1,6 @@
 <div class="container">
     <div class="row">
-        <h1 class="page-header">Add Category</h1>
+        <h1 class="page-header">Update Kategori</h1>
         <!-- Menampilkan Error Pada Penginputan-->
         <% if (typeof errors != 'undefined') { %>
         <div class="alert alert-danger" role="alert">
@@ -15,14 +15,13 @@
     </div>
 </div>
 
-<% let isiData; %>
-<% if(locals.data) { isiData = data} %>
 
-<form method="POST" action="/category" class="mt-4">
+<form method="POST" action="/setting-category/update" class="mt-4">
     <div class="mb-3">
-        <label for="Title" class="form-label">Kategori</label>
+        <input type="hidden" name="oldCategory" value="<%= category.oldCategory || category.title_category %>">
+        <label for="title_category" class="form-label">Kategori</label>
         <input type="text" class="form-control" id="Title" aria-describedby="Title" name="title_category"
-            placeholder="judul category" value="<%= isiData?.title_category %>" required>
+            placeholder=" judul category" value="<%= category.title_category %>" required>
     </div>
 
     <button type="submit" class="btn btn-primary">Submit</button>

@@ -1,15 +1,29 @@
+<% if (typeof msg !== 'undefined' ) { %>
+<p><%= msg %></p>
+<% } %>
+
+
 <h1 class="text-center">Topik Terkini</h1>
 <% if (posts.length < 1 ) { %>
-<p>Categorys Data empty</p>
+<p>Forum Data Tidak ada</p>
 <% } else {%>
 <% for(const post of posts) { %>
-<div class="card w-70 mt-4">
+<div class="card w-50 mt-4">
     <div class="card-body">
-        <h5 class="card-title"><a href="/post/<%= post.id %> "><%= post.title %></a></h5>
-        <p class="card-text"><%= post.descrips %> </p>
-        <p class="card-text"><small class="text-muted"><%= post.date %></small></p>
+        <h5 class="card-title">
+            <%= capitalize.words(post.title_post) %>
+        </h5>
+        <p><%= post.content.substring(0, 50) %>... </p>
+        <p class="card-text"><small class="text-muted"> <%= post.username %>
+                <%= moment(post.date).format('yyyy-MM-DD') %>, <%= moment(post.time).format('HH:MM') %></small></p>
+
     </div>
+    <% if(post.image === 'null' || post.image === 'undefined') { %>
+
+    <% }else { %>
     <img src="..." class="card-img-bottom" alt="...">
+    <% } %>
+    <a href="/category/<%= post.title_category %>/post/<%= post.title_post %>" class="stretched-link"></a>
 </div>
 <% } %>
 <% } %>

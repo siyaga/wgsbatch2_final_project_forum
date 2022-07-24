@@ -1,7 +1,7 @@
 <!-- mainbody -->
 
-<h1>Kategori List : </h1>
-<a href="/setting-category/add" class="btn btn-primary mt-3 mb-3"><i class="bi bi-plus-square"></i> Add Kategori
+<h1>User List : </h1>
+<a href="/setting-user/add" class="btn btn-primary mt-3 mb-3"><i class="bi bi-plus-square"></i> Add Kategori
     Baru</a>
 
 <% if (msg.length !== 0) { %>
@@ -14,34 +14,39 @@
     <thead>
         <tr>
             <th scope="col">No</th>
-            <th scope="col">Judul Kategori</th>
+            <th scope="col">Username</th>
+            <th scope="col">Nama</th>
+            <th scope="col">Email</th>
             <th scope="col">Tanggal Pembuatan</th>
             <th scope="col text-center">Action</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <% if (categorys.length < 1 ) { %>
-            <p>Kategori Data Tidak ada</p>
+            <% if (users.length < 1 ) { %>
+            <p>user data tidak ada</p>
             <% } else {%>
             <!-- Membuat nomor angka variable let i -->
             <% let i = 1; %>
-            <% for(const category of categorys) { %>
+            <% for(const user of users) { %>
         <tr>
             <!-- Memanggil dan nomor -->
             <th><%= i++ %> </th>
-            <td><%= category.title_category %> </td>
-            <td><%= moment(category.date).format('YYYY-MM-DD') %> <%= moment(category.time).format('HH:MM') %>
+            <td><%= user.username%> </td>
+            <td><%= user.nama %> </td>
+            <td><%= user.email %> </td>
+            <td>
+                <%= moment(user.date).format('YYYY-MM-DD') %>
             </td>
 
             <td>
                 <!-- Menambahkan update dan delete  -->
-                <a href="/setting-category/edit/<%= category.title_category %>"
-                    class="btn btn-warning ml-1 badge mt-2"><i class="bi bi-pencil-square"></i>
+                <a href="/user/edit/<%= user.username %>" class="btn btn-warning ml-1 badge mt-2"><i
+                        class="bi bi-pencil-square"></i>
                     Update</a>
                 <br />
-                <a href="/setting-category/delete/<%= category.title_category %>" class="btn btn-danger badge mt-2"
-                    onclick="return confirm('yakin Anda Menghapus <%= category.title_category %>?')"><i
+                <a href="/user/delete/<%= user.username %>" class="btn btn-danger badge mt-2"
+                    onclick="return confirm('yakin Anda Menghapus <%= user.username %>?')"><i
                         class="bi bi-trash-fill"></i>
                     Delete</a>
             </td>

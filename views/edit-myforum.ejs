@@ -15,41 +15,43 @@
     </div>
 </div>
 
-<% let isiData; %>
-<% if(locals.data) { isiData = data} %>
 
-<form method="POST" action="/myforum" class="mt-4">
+<form method="POST" action="/myforun/update" class="mt-4">
     <fieldset>
         <div class="mb-3">
             <label class="form-label" for="select">Kategori</label>
-            <select class="form-select" id="select" name="category" value="<%= isiData?.category %>" required>
+            <select class="form-select" id="select" name="category" value="<%= isiData?.title %>" required>
                 <option selected>Pilih Kategori</option>
                 <% if (categorys.length < 1 ) { %>
                 <p>Kategori Data Tidak Ada</p>
                 <% } else {%>
                 <% for(const category of categorys) { %>
-                <option value="<%= category.id_category %>"><%= category.title_category %></option>
+                <option value="<%= category.title_category %>"><%= category.title_category %></option>
                 <% } %>
                 <% } %>
             </select>
         </div>
     </fieldset>
+    <input type="hidden" name="oldCategory" value="<%= category.oldCategory || category.title_category %>">
+    <input type="hidden" name="oldCategory" value="<%= category.oldCategory || category.title_category %>">
+    <input type="hidden" name="oldCategory" value="<%= category.oldCategory || category.title_category %>">
+    <input type="hidden" name="oldCategory" value="<%= category.oldCategory || category.title_category %>">
 
     <div class="mb-3">
         <label for="Title" class="form-label">Judul Diskusi</label>
         <input type="text" class="form-control" id="Title" aria-describedby="Title" name="title_post"
-            placeholder="Judul Diskusi" value="<%= isiData?.title_post %>" required>
+            placeholder="Judul Diskusi" value="<%=  %>" required>
     </div>
     <div class="mb-3">
         <label for="Title" class="form-label">Content</label>
         <textarea type="text" class="form-control" id="Title" aria-describedby="Title" name="content"
-            placeholder="Isi Diskusi" value="<%= isiData?.content %>" required></textarea>
+            placeholder="Isi Diskusi" value="<%=  %>" required></textarea>
     </div>
 
     <div class="mb-3">
         <label for="image" class="form-label">Image </label>
 
-        <input type="file" class="form-control" id="image" name="image" value="<%= isiData?.content %> ">
+        <input type="file" class="form-control" id="image" name="image" value="<%= %> ">
 
     </div>
 

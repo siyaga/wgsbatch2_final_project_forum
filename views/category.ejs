@@ -1,1 +1,18 @@
-<p>ini category</p>
+<% if (!categorys) { %>
+Kategori tidak ada.<br>
+<% } else { %>
+<div class="card">
+    <div class="card-header">
+        <h1>Kategori</h1>
+    </div>
+
+    <div class="card-body">
+        <% for(const category of categorys) { %>
+        <h5 class="card-title"><a
+                href="/category/<%= category.title_category %>"><%= capitalize.words(category.title_category)%></a>
+        </h5>
+        <% } %>
+    </div>
+
+</div>
+<% } %>

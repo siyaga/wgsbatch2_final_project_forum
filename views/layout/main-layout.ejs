@@ -27,22 +27,45 @@
                 </a>
 
                 <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                    <li><a href="/" class="nav-link px-2 text-white">Forum</a></li>
                     <li><a href="/category" class="nav-link px-2 text-white">Kategori</a></li>
+                    <% if(user){ %>
+
+
+                    <% }else if(user === undefined || user === null){ %>
                     <li><a href="/myforum" class="nav-link px-2 text-white">Forum Saya</a></li>
                     <li><a href="/setting-category" class="nav-link px-2 text-white">Setting Kategori</a></li>
-                    <li><a href="/setting-sub-category" class="nav-link px-2 text-white">Setting Sub Kategori</a></li>
+                    <li><a href="/setting-user" class="nav-link px-2 text-white">Setting User</a></li>
+                    <% } %>
                 </ul>
 
                 <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
                     <input type="search" class="form-control form-control-primary" placeholder="Search..."
                         aria-label="Search">
                 </form>
+                <% if(user){ %>
 
                 <div class="text-end">
                     <a href="/users/login" class="btn btn-outline-light me-2">Login</a>
                     <a href="/users/register" class="btn btn-warning">Sign-up</a>
                 </div>
+
+                <% }else if(user === undefined || user === null){ %>
+                <div class="dropdown text-end">
+                    <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                    </a>
+                    <ul class="dropdown-menu text-small">
+                        <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="/users/logout">Sign out</a></li>
+                    </ul>
+                </div>
+
+                <% } %>
+
             </div>
         </div>
     </header>
