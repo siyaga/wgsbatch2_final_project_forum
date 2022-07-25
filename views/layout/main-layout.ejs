@@ -25,15 +25,17 @@
                 <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
                     <h2>adaForum</h2>
                 </a>
-                <%= console.log(users) %>
                 <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                     <li><a href="/category" class="nav-link px-2 text-white">Kategori</a></li>
                     <% if(users=='null'){ %>
 
-                    <% }else{ %>
+                    <% }else if(users.role=='admin'){ %>
                     <li><a href="/myforum" class="nav-link px-2 text-white">Forum Saya</a></li>
                     <li><a href="/setting-category" class="nav-link px-2 text-white">Setting Kategori</a></li>
                     <li><a href="/setting-user" class="nav-link px-2 text-white">Setting User</a></li>
+
+                    <% }else if(users.role=='user'){ %>
+                    <li><a href="/myforum" class="nav-link px-2 text-white">Forum Saya</a></li>
 
                     <% } %>
                 </ul>
@@ -54,7 +56,7 @@
                 <div class="dropdown text-end">
                     <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                        <img src="../image/<%= users.image %> " alt="mdo" width="32" height="32" class="rounded-circle">
                     </a>
                     <ul class="dropdown-menu text-small">
                         <li><a class="dropdown-item" href="/profile">Profile</a></li>

@@ -14,15 +14,16 @@
             <%= capitalize.words(post.title_post) %>
         </h5>
         <p><%= post.content.substring(0, 50) %>... </p>
+        <% if(post.image === 'null' || post.image === 'undefined') { %>
+
+        <% }else { %>
+        <img src="../image/<%= post.image %>" class="rounded mx-0 d-block" width="30%" alt="...">
+        <% } %>
         <p class="card-text"><small class="text-muted"> <%= post.username %>
                 <%= moment(post.date).format('yyyy-MM-DD') %>, <%= moment(post.time).format('HH:MM') %></small></p>
 
     </div>
-    <% if(post.image === 'null' || post.image === 'undefined') { %>
 
-    <% }else { %>
-    <img src="../image/<%= post.image %>" class="card-img-bottom" alt="...">
-    <% } %>
     <a href="/category/<%= post.title_category %>/post/<%= post.title_post %>" class="stretched-link"></a>
 </div>
 <% } %>

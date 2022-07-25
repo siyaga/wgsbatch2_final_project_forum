@@ -19,6 +19,7 @@
 <form method="POST" action="/setting-category/update" class="mt-4">
     <div class="mb-3">
         <input type="hidden" name="oldCategory" value="<%= category.oldCategory || category.title_category %>">
+        <%= category.title_category %>
         <label for="title_category" class="form-label">Kategori</label>
         <input type="text" class="form-control" id="Title" aria-describedby="Title" name="title_category"
             placeholder=" judul category" value="<%= category.title_category %>" required>

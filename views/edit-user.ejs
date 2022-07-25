@@ -17,22 +17,30 @@
 
 
 
-<form method="POST" action="/setting-user/update" class="mt-4">
+<form method="POST" action="/setting-user/update" class="mt-4" enctype="multipart/form-data">
+    <input type="hidden" name="oldUsername" value="<%= selectUser.oldUsername || selectUser.username %>">
+    <input type="hidden" name="oldNama" value="<%= selectUser.oldNama || selectUser.nama %>">
+    <input type="hidden" name="oldEmail" value="<%= selectUser.oldEmail || selectUser.email %>">
+    <input type="hidden" name="oldImage" value="<%= selectUser.oldImage || selectUser.image %>">
+    <input type="hidden" name="id_user" value="<%=  selectUser.id_user %>">
+
+
+
     <div class="mb-3">
         <label for="Title" class="form-label">Username</label>
         <input type="text" class="form-control" id="Title" aria-describedby="Title" name="username"
-            placeholder="Username" value="<%=  %>" required>
+            placeholder="Username" value="<%= selectUser.username %>" required>
     </div>
     <div class="mb-3">
         <label for="name" class="form-label">Nama Lengkap</label>
-        <input type="text" class="form-control" id="name" aria-describedby="name" name="name" placeholder="Nama Lengkap"
-            value="<%=  %>" required>
+        <input type="text" class="form-control" id="nama" aria-describedby="nama" name="nama" placeholder="Nama Lengkap"
+            value="<%= selectUser.nama %>" required>
     </div>
 
     <div class="mb-3">
         <label for="email" class="form-label">Email</label>
         <input type="email" class="form-control" id="email" aria-describedby="email" name="email" placeholder="Email"
-            value="<%= %>" required>
+            value="<%= selectUser.email %>" required>
     </div>
     <div class="mb-3">
         <label for="Password" class="form-label">Password</label>
@@ -47,7 +55,7 @@
     <div class="mb-3">
         <label for="image" class="form-label">Image </label>
 
-        <input type="file" class="form-control" id="image" name="image">
+        <input type="file" accept="image/png, image/jpeg, image/jpg" class="form-control" id="image" name="image">
 
     </div>
 

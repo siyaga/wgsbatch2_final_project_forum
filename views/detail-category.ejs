@@ -13,15 +13,15 @@
         </h5>
 
         <p><%= forum.content.substring(0, 50) %>... </p>
+        <% if(forum.image === 'null' || forum.image === 'undefined') { %>
 
+        <% }else { %>
+        <img src="../image/<%= forum.image %>" class="rounded mx-0 d-block" width="30%" alt="...">
+        <% } %>
         <p class="card-text"><small class="text-muted"> <%= forum.username %>
                 <%= moment(forum.date).format('yyyy-MM-DD') %>, <%= moment(forum.time).format('HH:MM') %></small></p>
     </div>
-    <% if(forum.image === 'null' || forum.image === 'undefined') { %>
 
-    <% }else { %>
-    <img src="../image/<%= forum.image %>" class="card-img-bottom" alt="...">
-    <% } %>
 
     <a href="/category/<%= forum.title_category %>/post/<%= forum.title_post %>" class="stretched-link"></a>
 </div>
