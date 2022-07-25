@@ -349,7 +349,7 @@ app.post('/comment', checkNotAuthenticated, async (req, res) => {
         //Menggunakan query insert untuk memasukan data atau mengadd data
         const dataAdd = await pool.query(`INSERT INTO public.forum_comment(
             id_user, id_post, comment, date, "time")
-            VALUES ( ${userId}, ${id_post}, ${comment}, now(), now())`)
+            VALUES ( ${userId}, ${id_post}, '${comment}', now(), now())`)
         dataAdd;
         req.flash('msg', `Berhasil menambahkan Commentar`)
         res.redirect(`/category/${title_category}/post/${title_post}`);
@@ -747,7 +747,7 @@ app.post('/setting-category/update', checkNotAuthenticated, [
         const oldCategory = req.body.oldCategory
         const title_category = req.body.title_category
 
-        const newUpdate = await pool.query(`UPDATE forum_category SET title_category = ${title_category}, date=now(), time=now() WHERE title_category = ${oldCategory}`)
+        const newUpdate = await pool.query(`UPDATE forum_category SET title_category = '${title_category}', date=now(), time=now() WHERE title_category = '${oldCategory}'`)
         newUpdate;
         req.flash('msg', 'Data  Kategori berhasil di ubah')
         res.redirect('/setting-category')

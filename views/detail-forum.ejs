@@ -45,7 +45,7 @@ Forum tidak ada.<br> <a href="/category" class="alert-link fw-normal">&laquo;Kem
 
     </div>
     <% if(users=='null'){ %>
-    <% }else if(users=='admin'){ %>
+    <% }else if(users.role=='admin'){ %>
     <div class="text-end mb-10 mr-10">
         <a href="/comment/edit/<%= comment.id_comment %>" class="btn btn-warning ml-1 badge mt-2"><i
                 class="bi bi-pencil-square"></i>
@@ -56,7 +56,20 @@ Forum tidak ada.<br> <a href="/category" class="alert-link fw-normal">&laquo;Kem
                 class="bi bi-trash-fill"></i>
         </a>
     </div>
+    <% }else if(users.role=='user' && users.id_user==comment.id_user){ %>
+    <div class="text-end mb-10 mr-10">
+        <a href="/comment/edit/<%= comment.id_comment %>" class="btn btn-warning ml-1 badge mt-2"><i
+                class="bi bi-pencil-square"></i>
+        </a>
+
+        <a href="/category/<%= titleCategory %> /post/<%= post.title_post %>/comment/delete/<%= comment.id_comment %>  %>"
+            class="btn btn-danger badge mt-2" onclick="return confirm('yakin Anda Menghapus comment ini  ?')"><i
+                class="bi bi-trash-fill"></i>
+        </a>
+    </div>
+
     <% } %>
+
 
 </div>
 <% } %>
@@ -76,7 +89,7 @@ Forum tidak ada.<br> <a href="/category" class="alert-link fw-normal">&laquo;Kem
 
 
             <div class="mb-3">
-                <label for="comment" class="form-label">Comment</label>
+                <label for="comment" class="form-label">Comment Sebagai <%= users.username %> </label>
                 <textarea type="text" class="form-control" id="comment" aria-describedby="comment" name="comment"
                     placeholder="comment" required></textarea>
             </div>
