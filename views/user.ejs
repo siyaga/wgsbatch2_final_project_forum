@@ -23,12 +23,12 @@
     </thead>
     <tbody>
         <tr>
-            <% if (users.length < 1 ) { %>
+            <% if (tbUser.length < 1 ) { %>
             <p>user data tidak ada</p>
             <% } else {%>
             <!-- Membuat nomor angka variable let i -->
             <% let i = 1; %>
-            <% for(const user of users) { %>
+            <% for(const user of tbUser) { %>
         <tr>
             <!-- Memanggil dan nomor -->
             <th><%= i++ %> </th>
@@ -41,11 +41,11 @@
 
             <td>
                 <!-- Menambahkan update dan delete  -->
-                <a href="/user/edit/<%= user.username %>" class="btn btn-warning ml-1 badge mt-2"><i
+                <a href="/setting-user/edit/<%= user.username %>" class="btn btn-warning ml-1 badge mt-2"><i
                         class="bi bi-pencil-square"></i>
                     Update</a>
                 <br />
-                <a href="/user/delete/<%= user.username %>" class="btn btn-danger badge mt-2"
+                <a href="/setting-user/delete/<%= user.username %>" class="btn btn-danger badge mt-2"
                     onclick="return confirm('yakin Anda Menghapus <%= user.username %>?')"><i
                         class="bi bi-trash-fill"></i>
                     Delete</a>

@@ -17,6 +17,10 @@
 
 
 <form method="POST" action="/myforun/update" class="mt-4">
+    <input type="hidden" name="oldPost" value="<%= category.oldPost || category.oldPost %>">
+    <input type="hidden" name="oldContent" value="<%= category.oldContent || category.content %>">
+    <input type="hidden" name="oldImage" value="<%= category.oldImage || category.image %>">
+
     <fieldset>
         <div class="mb-3">
             <label class="form-label" for="select">Kategori</label>
@@ -32,10 +36,6 @@
             </select>
         </div>
     </fieldset>
-    <input type="hidden" name="oldCategory" value="<%= category.oldCategory || category.title_category %>">
-    <input type="hidden" name="oldCategory" value="<%= category.oldCategory || category.title_category %>">
-    <input type="hidden" name="oldCategory" value="<%= category.oldCategory || category.title_category %>">
-    <input type="hidden" name="oldCategory" value="<%= category.oldCategory || category.title_category %>">
 
     <div class="mb-3">
         <label for="Title" class="form-label">Judul Diskusi</label>

@@ -18,19 +18,20 @@
 <% let isiData; %>
 <% if(locals.data) { isiData = data} %>
 
-<form method="POST" action="/myforum" class="mt-4">
+<form method="POST" action="/myforum" class="mt-4" enctype="multipart/form-data">
+    <div class="mb-3">
+        <input type="hidden" class="form-control" id="Title" aria-describedby="Title" name="id_user"
+            value="<%= idUser %>" required>
+    </div>
     <fieldset>
         <div class="mb-3">
             <label class="form-label" for="select">Kategori</label>
             <select class="form-select" id="select" name="category" value="<%= isiData?.category %>" required>
                 <option selected>Pilih Kategori</option>
-                <% if (categorys.length < 1 ) { %>
-                <p>Kategori Data Tidak Ada</p>
-                <% } else {%>
                 <% for(const category of categorys) { %>
                 <option value="<%= category.id_category %>"><%= category.title_category %></option>
                 <% } %>
-                <% } %>
+
             </select>
         </div>
     </fieldset>
@@ -49,7 +50,8 @@
     <div class="mb-3">
         <label for="image" class="form-label">Image </label>
 
-        <input type="file" class="form-control" id="image" name="image" value="<%= isiData?.content %> ">
+        <input type="file" accept="image/png, image/jpeg, image/jpg" class="form-control" id="image" name="image"
+            value="<%= isiData?.content %> ">
 
     </div>
 

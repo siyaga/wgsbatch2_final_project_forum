@@ -1,6 +1,11 @@
 <div class="container">
     <div class="row">
         <h1 class="page-header">Login</h1>
+        <% if (messages.success_msg) { %>
+        <div class="alert alert-danger" role="alert">
+            <%= messages.success_msg %>
+        </div>
+        <% } %>
         <% if (messages.error) { %>
         <div class="alert alert-danger" role="alert">
             <%= messages.error %>

@@ -1,5 +1,6 @@
 // Memanggil Library
 const express = require('express');
+const fs = require('fs')
 const expressLayouts = require('express-ejs-layouts');
 const bcrypt = require('bcrypt');
 const moment = require('moment');
@@ -39,6 +40,9 @@ const {
 const {
     get
 } = require('http');
+const {
+    error
+} = require('console');
 
 const fileStorage = multer.diskStorage({
     destination: (req, file, callback) => {
@@ -49,28 +53,13 @@ const fileStorage = multer.diskStorage({
     }
 });
 
-const fileFilter = (req, file, callback) => {
-    if (file.mimetype === 'image/png' ||
-        file.mimetype == 'image/jpg' ||
-        file.mimetype == 'image/jpeg') {
-        callback(null, true);
-    } else {
-        callback(null, false);
-
-    }
-
-}
 
 const kirim = multer({
-    storage: fileStorage,
-    fileFilter: fileFilter
+    storage: fileStorage
 })
 
 
-app.use(multer({
-    storage: fileStorage,
-    fileFilter: fileFilter
-}).single('image'))
+
 // Built-in Middleware
 app.use(express.static('public'));
 // gunakan ejs
@@ -87,8 +76,8 @@ app.use(session({
         maxAge: 6000
     },
     secret: 'secret',
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
 }));
 app.use(passport.initialize());
 app.use(passport.session())
@@ -105,10 +94,10 @@ app.set('layout', './layout/main-layout')
 
 // Membuat Proses menuju login Page 
 app.get('/users/login', checkAuthenticated, (req, res) => {
-
     res.render('login', {
         title: "Login",
         layout: "layout/main-layout",
+        users: authUser(req.user)
     })
 })
 // Melakukan Proses Login page
@@ -119,22 +108,32 @@ app.post("/login", passport.authenticate("local", {
     successFlash: true,
 }));
 
-// Membuat Proses Home Page atau Main Page
-app.get('/admin/dashboard', checkAuthenticated, (req, res) => {
+function authUser(req) {
+    if (req === undefined) {
+        return 'null';
+    } else {
+        return req.username
+
+    }
+}
+
+
+
+// main page
+app.get('/', async (req, res) => {
 
     const sql = "SELECT title_post,content, forum_category.title_category, forum_post.date, forum_post.image, tb_users.username FROM forum_post " +
         "INNER JOIN forum_category ON forum_post.id_category = forum_category.id_category " +
         "INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user ORDER BY forum_post.date DESC "
     pool.query(sql, [], (error, results) => {
-        if (error) {
-            throw error
-        }
+        console.log(authUser(req.user))
+
         res.render('home', {
             title: "Ada Forum",
             layout: "layout/main-layout",
             posts: results.rows,
             msg: req.flash('msg'),
-            user: req.user.username,
+            users: authUser(req.user),
             moment: moment,
             capitalize: capitalize
         })
@@ -144,23 +143,21 @@ app.get('/admin/dashboard', checkAuthenticated, (req, res) => {
 
 })
 
-// Membuat Proses Home Page atau Main Page
-app.get('/', checkAuthenticated, async (req, res) => {
+// main page
+app.get('/admin/', checkAuthenticated, async (req, res) => {
 
     const sql = "SELECT title_post,content, forum_category.title_category, forum_post.date, forum_post.image, tb_users.username FROM forum_post " +
         "INNER JOIN forum_category ON forum_post.id_category = forum_category.id_category " +
         "INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user ORDER BY forum_post.date DESC "
     pool.query(sql, [], (error, results) => {
-        if (error) {
-            throw error
-        }
-        console.log(req.body.username)
+
+
         res.render('home', {
             title: "Ada Forum",
             layout: "layout/main-layout",
             posts: results.rows,
             msg: req.flash('msg'),
-            user: req.body.username,
+            users: authUser(req.user),
             moment: moment,
             capitalize: capitalize
         })
@@ -180,7 +177,7 @@ app.get('/users/register', checkAuthenticated, (req, res) => {
         title: "Registration",
         layout: "layout/main-layout",
         data: req.body,
-        user: req.body.username
+        users: authUser(req.user),
     })
 })
 
@@ -225,7 +222,8 @@ app.post('/register', [
             title: 'Form Tambah Data Contact',
             layout: 'layout/main-layout',
             errors: errors.array(),
-            data: req.body
+            data: req.body,
+            users: authUser(req.user),
 
         });
 
@@ -258,9 +256,15 @@ app.post('/register', [
 
 // Melakukan Logout
 app.get('/users/logout', checkNotAuthenticated, (req, res) => {
-    req.logout();
+    req.logout(function (error) {
+        if (error) {
+            return next(error)
+        }
+    });
+
     req.flash('success_msg', "You have logout")
     res.redirect("/users/login")
+
 })
 
 
@@ -277,7 +281,7 @@ app.get('/category', checkAuthenticated, (req, res) => {
             layout: "layout/main-layout",
             categorys: results.rows,
             msg: req.flash('msg'),
-            user: req.body.username,
+            users: authUser(req.user),
             capitalize: capitalize
 
         })
@@ -289,7 +293,6 @@ app.get('/category', checkAuthenticated, (req, res) => {
 // Menampilkan semua data category
 app.get('/category/:title_category', checkAuthenticated, (req, res) => {
     const title_category = req.params.title_category;
-    console.log(title_category)
     // Mencari nama yang akan di edit lalu di masukan kedalam input di ejs
     const sql = `SELECT title_post,content, forum_category.title_category, forum_post.date, forum_post.image, tb_users.username FROM forum_post 
     INNER JOIN forum_category ON forum_post.id_category = forum_category.id_category 
@@ -302,8 +305,9 @@ app.get('/category/:title_category', checkAuthenticated, (req, res) => {
             title: `Kategori ${title_category}`,
             layout: "layout/main-layout",
             forums: result.rows,
+            title_category: title_category,
             msg: req.flash('msg'),
-            user: req.body.username,
+            users: authUser(req.user),
             moment: moment,
             capitalize: capitalize
 
@@ -317,7 +321,8 @@ app.get('/category/:title_category/post/:title_post', checkAuthenticated, async 
     const title_category = req.params.title_category
     const title_post = req.params.title_post
     const cariIdForum = await getIdForum(title_post)
-    const ambilIdForum = await getSelectComment(cariIdForum.id_post)
+    const findId = cariIdForum.id_post;
+    const ambilIdForum = await getSelectComment(findId)
 
     const sql = `SELECT forum_post.id_post,tb_users.username,title_post,content,forum_post.date, forum_post.image FROM forum_post INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user WHERE title_post = '${title_post}'`;
     pool.query(sql, (err, result) => {
@@ -326,7 +331,7 @@ app.get('/category/:title_category/post/:title_post', checkAuthenticated, async 
             layout: "layout/main-layout",
             post: result.rows[0],
             titleCategory: title_category,
-            user: req.body.username,
+            users: authUser(req.user),
             comments: ambilIdForum,
             moment: moment,
             capitalize: capitalize
@@ -335,7 +340,91 @@ app.get('/category/:title_category/post/:title_post', checkAuthenticated, async 
 
 
 })
+app.post('/comment', checkAuthenticated, async (req, res) => {
+    try {
+        // Mengambil isi form yang di isikan oleh user
+        const comment = req.body.comment;
+        const id_post = await req.body.id_post;
+        const username = 16;
+        const title_category = req.body.title_category;
+        const title_post = req.body.title_post;
 
+
+
+
+
+        //Menggunakan query insert untuk memasukan data atau mengadd data
+        const dataAdd = await pool.query(`INSERT INTO forum_comment(
+            comment,id_user, date,time,id_post) values ('${comment}','${username}',now(),now(), '${id_post}')`)
+        dataAdd;
+        req.flash('msg', `Berhasil menambahkan Commentar`)
+        res.redirect(`/category/${title_category}/post/${title_post}`);
+    } catch (err) {
+        console.error(err.message)
+    }
+
+})
+app.get('/category/:title_category/post/:title_post/comment/delete/:id_comment', async (req, res) => {
+
+
+    try {
+
+
+        const id_comment = req.params.id_comment;
+        const deleteComment = await deleteCommentId(id_comment)
+        const title_category = req.body.title_category;
+        const title_post = req.body.title_post;
+
+        const sql = `DELETE FROM forum_comment WHERE id_comment = '${title_post}'`
+
+
+        pool.query(sql, (err, result) => {
+            if (!id_comment) {
+                res.status(404)
+                res.send('<h1>404</h1>')
+            } else {
+                deleteComment;
+                result.rows[0]
+                req.flash('msg', `Berhasil menambahkan Commentar`)
+                res.redirect(`/category/${title_category}/post/${title_post}`);
+            }
+
+        })
+
+
+    } catch (error) {
+
+    }
+
+})
+
+
+
+// Proses Delete forum
+app.get('/myforum/delete/:title_post', checkAuthenticated, async (req, res) => {
+
+    const title_post = req.params.title_post;
+    const getIdForums = await getIdForum(title_post);
+    const deleteComment = await deleteCommentPosting(getIdForums)
+
+    const sql = `DELETE FROM forum_post WHERE title_post = '${title_post}'`
+
+    const postNamaImage = await getImageName(title_post)
+    postNamaImage.image
+    pool.query(sql, (err, result) => {
+        if (!title_post) {
+            res.status(404)
+            res.send('<h1>404</h1>')
+        } else {
+            deleteComment;
+            result.rows[0]
+            fs.unlinkSync(`./public/image/${postNamaImage.image}`)
+            req.flash('msg', `${title_post} berhasil di hapus`)
+            res.redirect('/myforum')
+        }
+
+    })
+})
 
 
 // Membuat Proses menuju MyForum
@@ -345,7 +434,6 @@ app.get('/myforum', checkAuthenticated, (req, res) => {
         forum_post.image,tb_users.username FROM forum_post INNER JOIN forum_category ON forum_post.id_category =
          forum_category.id_category INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user 
         ORDER BY forum_post.date ASC`
-    // WHERE tb_users.username='${req.body.username}
     pool.query(sql, [], (error, results) => {
         if (error) {
             throw error
@@ -356,7 +444,7 @@ app.get('/myforum', checkAuthenticated, (req, res) => {
             layout: "layout/main-layout",
             forums: results.rows,
             msg: req.flash('msg'),
-            user: req.body.username,
+            users: authUser(req.user),
             moment: moment
 
 
@@ -367,18 +455,19 @@ app.get('/myforum', checkAuthenticated, (req, res) => {
 
 // Tombol Tambah data
 // Menampilkan semua data Forum Page
-app.get('/myforum/add', (req, res) => {
+app.get('/myforum/add', checkAuthenticated, (req, res) => {
 
     const sql = "select * from forum_category"
     pool.query(sql, [], (error, results) => {
         if (error) {
             throw error
         }
-
         res.render('add-myforum', {
+            users: authUser(req.user),
             title: "Tambah Data Forum",
             layout: "layout/main-layout",
             categorys: results.rows,
+            idUser: req.user.id_user,
             msg: req.flash('msg')
 
         })
@@ -391,7 +480,7 @@ app.get('/myforum/add', (req, res) => {
 
 // Tombol Update Data
 // Menampilkan semua data Forum Page
-app.get('/myforum/edit', (req, res) => {
+app.get('/myforum/edit', checkAuthenticated, (req, res) => {
 
     const sql = "select * from forum_category"
     pool.query(sql, [], (error, results) => {
@@ -400,6 +489,8 @@ app.get('/myforum/edit', (req, res) => {
         }
 
         res.render('edit-myforum', {
+
+            users: authUser(req.user),
             title: "Tambah Data Forum",
             layout: "layout/main-layout",
             categorys: results.rows,
@@ -415,7 +506,7 @@ app.get('/myforum/edit', (req, res) => {
 
 // Proses Create
 // Insert Data Forum
-app.post('/myforum', kirim.array('image', 1), [
+app.post('/myforum', checkAuthenticated, kirim.array('image', 1), [
     body('title_post').custom(async (valueTitle) => {
 
         // Mencari nama yang sama di query
@@ -438,7 +529,8 @@ app.post('/myforum', kirim.array('image', 1), [
             title: 'Form Tambah forum baru',
             layout: 'layout/main-layout',
             errors: errors.array(),
-            data: req.body
+            users: authUser(req.user),
+            data: req.body,
 
         });
 
@@ -450,22 +542,19 @@ app.post('/myforum', kirim.array('image', 1), [
             const category = req.body.category;
             const title_post = req.body.title_post;
             const content = req.body.content;
-            let image;
-            if (!req.file) {
-                image = `null`
-
+            const idUser = req.body.id_user;
+            let image
+            if (!req.files.find((fileE) => fileE.filename)) {
+                image = 'null'
             } else {
-                image = req.file
+                image = req.files[0].filename
             }
-
-            const user = 14
-
 
 
 
             //Menggunakan query insert untuk memasukan data atau mengadd data
             const dataAdd = await pool.query(`INSERT INTO forum_post(
-                id_category,id_user, title_post,content,image,date,time) values ('${category}','${user}','${title_post}','${content}','${image}',now(),now())`)
+                id_category,id_user, title_post,content,image,date,time) values ('${category}','${idUser}','${title_post}','${content}','${image}',now(),now())`)
             dataAdd;
             req.flash('msg', `Berhasil menambahkan Forum dengan judul ${title_post}`)
             res.redirect('/myforum');
@@ -480,7 +569,7 @@ app.post('/myforum', kirim.array('image', 1), [
 
 // Update setting
 // Update Myforum
-app.post('/myforum/update', [
+app.post('/myforum/update', checkAuthenticated, [
     body('title_post').custom(async (valueTitle, {
         req
     }) => {
@@ -502,6 +591,7 @@ app.post('/myforum/update', [
 
         res.render('edit-myforum', {
             title: 'Form Ubah Diskusi',
+            users: authUser(req.user),
             layout: 'layout/main-layout',
             errors: errors.array(),
             category: req.body
@@ -510,9 +600,6 @@ app.post('/myforum/update', [
     } else {
         const oldCategory = req.body.oldCategory
         const title_category = req.body.title_category
-        console.log(oldCategory)
-        console.log(title_category)
-
         const newUpdate = await pool.query(`UPDATE forum_category SET title_category = ${title_category}, date=now(), time=now() WHERE title_category = ${oldCategory}`)
         newUpdate;
         req.flash('msg', 'Forum berhasil di ubah')
@@ -525,7 +612,7 @@ app.post('/myforum/update', [
 
 
 // Proses Delete forum
-app.get('/myforum/delete/:title_post', async (req, res) => {
+app.get('/myforum/delete/:title_post', checkAuthenticated, async (req, res) => {
 
     const title_post = req.params.title_post;
     const getIdForums = await getIdForum(title_post);
@@ -541,6 +628,7 @@ app.get('/myforum/delete/:title_post', async (req, res) => {
         } else {
             deleteComment;
             result.rows[0]
+            //fs.unlinkSync(`../public/image/${}`);
             req.flash('msg', `${title_post} berhasil di hapus`)
             res.redirect('/myforum')
         }
@@ -552,7 +640,7 @@ app.get('/myforum/delete/:title_post', async (req, res) => {
 
 
 // Menampilkan semua data setting category page
-app.get('/setting-category', (req, res) => {
+app.get('/setting-category', checkAuthenticated, (req, res) => {
 
     const sql = "SELECT title_category, date  FROM forum_category ORDER BY date ASC"
     pool.query(sql, [], (error, results) => {
@@ -563,6 +651,7 @@ app.get('/setting-category', (req, res) => {
         res.render('setting-category', {
             title: "Setting Category",
             layout: "layout/main-layout",
+            users: authUser(req.user),
             categorys: results.rows,
             msg: req.flash('msg'),
             moment: moment
@@ -572,17 +661,18 @@ app.get('/setting-category', (req, res) => {
 })
 
 // Proses menuju form tambah category
-app.get('/setting-category/add', (req, res) => {
+app.get('/setting-category/add', checkAuthenticated, (req, res) => {
 
     res.render('add-category', {
         title: "Form Sub Kategori",
-        layout: "layout/main-layout"
+        layout: "layout/main-layout",
+        users: authUser(req),
     })
 
 })
 
 // Proses menuju form tambah category
-app.get('/setting-category/edit/:title_category', (req, res) => {
+app.get('/setting-category/edit/:title_category', checkAuthenticated, (req, res) => {
     const title_category = req.params.title_category;
     const sql = `SELECT title_category FROM forum_category WHERE title_category ='${title_category}'`
     pool.query(sql, (err, result) => {
@@ -591,28 +681,34 @@ app.get('/setting-category/edit/:title_category', (req, res) => {
             title: "Edit Kategori",
             layout: "layout/main-layout",
             category: result.rows[0],
+            users: authUser(req.user),
         })
     })
 
 
 })
 // Update Category
-app.post('/setting-category/update', [
+app.post('/setting-category/update', checkAuthenticated, [
     body('title_category').custom(async (valueTitle, {
         req
     }) => {
+        try {
 
-        // Mencari nama yang sama di query
 
-        const queryDuplikat = await pool.query(`SELECT * FROM forum_category WHERE title_category = '${valueTitle.toLowerCase()}'`)
-        const duplikat = queryDuplikat.rows[0]
+            // Mencari nama yang sama di query
 
-        if (valueTitle !== req.body.oldCategory && duplikat) {
-            throw new Error(`Kategori ${valueTitle} sudah Digunakan! `);
+            const queryDuplikat = await pool.query(`SELECT * FROM forum_category WHERE title_category = '${valueTitle.toLowerCase()}'`)
+            const duplikat = queryDuplikat.rows[0]
 
+            if (valueTitle !== req.body.oldCategory && duplikat) {
+                throw new Error(`Kategori ${valueTitle} sudah Digunakan! `);
+
+            }
+
+            return true;
+        } catch (error) {
+            console.log(err)
         }
-
-        return true;
     }),
 ], async (req, res) => {
     const errors = validationResult(req);
@@ -622,7 +718,8 @@ app.post('/setting-category/update', [
             title: 'Form Ubah Kategori',
             layout: 'layout/main-layout',
             errors: errors.array(),
-            category: req.body
+            category: req.body,
+            users: authUser(req.user),
         });
 
     } else {
@@ -641,7 +738,7 @@ app.post('/setting-category/update', [
 
 
 // Proses Delete User
-app.get('/setting-category/delete/:title_category', (req, res) => {
+app.get('/setting-category/delete/:title_category', checkAuthenticated, (req, res) => {
 
     const title_category = req.params.title_category;
 
@@ -661,7 +758,7 @@ app.get('/setting-category/delete/:title_category', (req, res) => {
 })
 
 // Insert Data category 
-app.post('/category', [
+app.post('/category', checkAuthenticated, [
     body('title_category').custom(async (valueTitle) => {
 
         // Mencari nama yang sama di query
@@ -683,6 +780,7 @@ app.post('/category', [
         res.render('add-category', {
             title: 'Form Tambah Kategori',
             layout: 'layout/main-layout',
+            users: authUser(req.user),
             errors: errors.array(),
             data: req.body
 
@@ -713,7 +811,7 @@ app.post('/category', [
 
 
 // Menampilkan semua data user
-app.get('/setting-user', (req, res) => {
+app.get('/setting-user', checkNotAuthenticated, (req, res) => {
 
     const sql = "SELECT * FROM tb_users  ORDER BY id_user ASC "
     pool.query(sql, [], (error, results) => {
@@ -723,7 +821,8 @@ app.get('/setting-user', (req, res) => {
         res.render('user', {
             title: "Setting User",
             layout: "layout/main-layout",
-            users: results.rows,
+            tbUser: results.rows,
+            users: authUser(req.user),
             msg: req.flash('msg'),
             moment: moment
 
@@ -733,42 +832,116 @@ app.get('/setting-user', (req, res) => {
 
 
 // Proses menuju form tambah User
-app.get('/setting-user/add', (req, res) => {
+app.get('/setting-user/add', checkAuthenticated, (req, res) => {
 
     res.render('add-user', {
         title: "Form Tambah User",
-        layout: "layout/main-layout"
+        layout: "layout/main-layout",
+        users: authUser(req),
     })
 
 })
 
+
+// Proses Daftar Registrasi user
+app.post('/user/register', [
+    body('username').custom(async (valueUsername) => {
+
+        // Mencari nama yang sama di query
+        const queryDuplikat = await pool.query(`SELECT * FROM tb_users WHERE username = '${valueUsername}'`)
+        const duplikat = queryDuplikat.rows[0]
+
+        if (duplikat) {
+            throw new Error(`${valueUsername} sudah terdaftar! `);
+
+        }
+
+        return true;
+    }),
+    check('email', 'Email tidak valid!').isEmail(),
+    // Pengecekan password arus lebih dari 6 karakter
+    check('password', 'password harus lebih dari 6 karakter').isLength({
+        min: 6
+    }),
+    // Pengecekan password harus di ulang sama dengan password comfirm
+    body('password').custom((valuePassword, {
+        req
+    }) => {
+
+        if (valuePassword !== req.body.password2) {
+            throw new Error(`Password tidak sama, mohon isikan ulang`);
+        }
+        return true;
+    }),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+
+
+        res.render('add-user', {
+            title: 'Form Tambah Data Contact',
+            layout: 'layout/main-layout',
+            errors: errors.array(),
+            users: authUser(req.user),
+            data: req.body,
+
+        });
+
+    } else {
+        // addDataContact(req.body);
+        // addContact di postgre
+        try {
+            // Mengambil isi form yang di isikan oleh user
+            const username = req.body.username;
+            const nama = req.body.nama;
+            const email = req.body.email;
+            const password = req.body.password;
+            const passwordhash = bcrypt.hashSync(password, 10);
+            //Menggunakan query insert untuk memasukan data atau mengadd data
+            const dataAdd = await pool.query(`INSERT INTO tb_users(
+                username,nama,email, password) values ('${username}','${nama}','${email}','${passwordhash}') `)
+            dataAdd;
+            req.flash('msg', `Berhasil Menambahkan ${username}`)
+            res.redirect('/setting-user');
+        } catch (err) {
+            console.error(err.message)
+        }
+
+    }
+
+
+});
+
+
 // Proses menuju form edit User
-app.get('/setting-user/edit', (req, res) => {
+app.get('/setting-user/edit', checkAuthenticated, (req, res) => {
 
     res.render('edit-user', {
         title: "Form Tambah User",
-        layout: "layout/main-layout"
+        layout: "layout/main-layout",
+        users: authUser(req.user),
     })
 
 })
 
 // Proses Delete User
-app.get('/user/delete/:title_category', (req, res) => {
+app.get('/user/delete/:title_category', checkAuthenticated, async (req, res) => {
 
     const username = req.params.username;
-    const cekIdUsername = getIdPostUsername(username)
-
-    const sqlUser = `DELETE FROM tb_users WHERE username = '${title_category}'`
+    // const cekIdUsername = await getIdPostUsername(username)
 
 
-    pool.query(sql, (err, result) => {
+    const sqlUser = `DELETE FROM tb_users WHERE username = '${username}'`
+
+
+    pool.query(sqlUser, (err, result) => {
         if (!username) {
             res.status(404)
             res.send('<h1>404</h1>')
         } else {
             req.flash('msg', `${username} berhasil di hapus`)
-            console.log(result.rows.length)
-            res.redirect('/setting-category')
+            result.rows[0]
+            res.redirect('/setting-user')
         }
 
 
@@ -798,7 +971,7 @@ async function getIdCategory(category) {
 
 async function getSelectComment(req) {
     try {
-        const sql = `SELECT forum_comment.id_comment,comment,forum_comment.date, forum_comment.time, tb_users.username FROM forum_comment INNER JOIN tb_users ON forum_comment.id_user = tb_users.id_user  WHERE id_post='${req}'`
+        const sql = `SELECT forum_comment.id_comment,comment,forum_comment.date, forum_comment.time, tb_users.username,id_post FROM forum_comment INNER JOIN tb_users ON forum_comment.id_user = tb_users.id_user  WHERE id_post='${req}'`
         const query = await pool.query(sql)
         req = query.rows
 
@@ -813,7 +986,7 @@ async function getSelectComment(req) {
 
 async function getIdForum(idForum) {
     try {
-        const sql = `SELECT * FROM public.forum_post WHERE title_post ='${idForum}'ORDER BY id_post ASC`
+        const sql = `SELECT id_post FROM public.forum_post WHERE title_post ='${idForum}'ORDER BY id_post ASC`
         const query = await pool.query(sql)
         idForum = query.rows[0]
 
@@ -919,12 +1092,40 @@ async function deleteCommentPosting(idUser) {
     return idUser;
 }
 
-// async function deleteUserPost(){
-//     try{
-//         const sql = ``
-//     }
-// }
+// Melakukan delete id_comment
+async function deleteCommentId(idComment) {
+    try {
+        const sql = `DELETE FROM forum_comment WHERE id_comment = '${idComment}'`
+        const query = await pool.query(sql)
+        idComment = query.rows[0]
 
+
+
+
+    } catch (err) {
+        console.error(err);
+
+    }
+
+    return idComment;
+}
+
+async function getImageName(imageName) {
+    try {
+        const sql = `SELECT * FROM forum_post WHERE title_post ='${imageName}'`
+        const query = await pool.query(sql)
+        imageName = query.rows[0]
+
+
+
+
+    } catch (err) {
+        console.error(err);
+
+    }
+
+    return imageName;
+}
 
 
 
@@ -932,7 +1133,7 @@ async function deleteCommentPosting(idUser) {
 function checkAuthenticated(req, res, next) {
 
     if (req.isAuthenticated()) {
-        // return res.redirect('/');
+        return res.redirect('/');
 
     }
     next();

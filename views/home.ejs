@@ -21,7 +21,7 @@
     <% if(post.image === 'null' || post.image === 'undefined') { %>
 
     <% }else { %>
-    <img src="..." class="card-img-bottom" alt="...">
+    <img src="../image/<%= post.image %>" class="card-img-bottom" alt="...">
     <% } %>
     <a href="/category/<%= post.title_category %>/post/<%= post.title_post %>" class="stretched-link"></a>
 </div>

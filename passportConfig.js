@@ -4,13 +4,11 @@ const bcrypt = require('bcrypt');
 
 function initialize(passport) {
     const autheticateUser = (username, password, done) => {
-        console.log(username, password);
         pool.query('SELECT * FROM tb_users WHERE username = $1', [username], (err, result) => {
             if (err) {
                 throw err;
             }
 
-            console.log(result.rows);
 
             if (result.rows.length > 0) {
                 const user = result.rows[0];

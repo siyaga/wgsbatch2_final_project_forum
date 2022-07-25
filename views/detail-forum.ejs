@@ -14,10 +14,10 @@ Forum tidak ada.<br> <a href="/category" class="alert-link fw-normal">&laquo;Kem
     <div class="card-body">
         <h3 class="card-title"><%= capitalize.words(post.title_post) %></h3>
         <p class="card-text"><%= post.content %> </p>
-        <% if(post.image === 'null' || post.image === 'undefined') { %>
+        <% if(post.image === null || post.image === undefined) { %>
 
         <% }else { %>
-        <img src="/image/nigma-galaxy.jpg" class="rounded mx-auto d-block" alt="...">
+        <img src="/image/<%= post.image %>" class="rounded mx-auto d-block" alt="...">
         <% } %>
         <p class="card-text"><small class="text-muted">Owner <%= post.username %>
                 <%= moment(post.date).format('yyyy-MM-DD') %>, <%= moment(post.time).format('HH:MM') %></small></p>
@@ -34,7 +34,6 @@ Forum tidak ada.<br> <a href="/category" class="alert-link fw-normal">&laquo;Kem
 <% for(const comment of comments){%>
 
 <div class="card w-70 mt-4">
-
     <div class="card-body">
 
         <small class="card-text">Comment by <%= comment.username %> </small>
@@ -45,24 +44,35 @@ Forum tidak ada.<br> <a href="/category" class="alert-link fw-normal">&laquo;Kem
         </p>
 
     </div>
+    <% if(users=='null'){ %>
+    <% }else{ %>
     <div class="text-end mb-10 mr-10">
         <a href="/comment/edit/<%= comment.id_comment %>" class="btn btn-warning ml-1 badge mt-2"><i
                 class="bi bi-pencil-square"></i>
         </a>
 
-        <a href="/comment/delete/<%= comment.id_comment %>" class="btn btn-danger badge mt-2"
-            onclick="return confirm('yakin Anda Menghapus comment ini  ?')"><i class="bi bi-trash-fill"></i>
+        <a href="/category/<%= titleCategory %> /post/<%= post.title_post %>/comment/delete/<%= comment.id_comment %>  %>"
+            class="btn btn-danger badge mt-2" onclick="return confirm('yakin Anda Menghapus comment ini  ?')"><i
+                class="bi bi-trash-fill"></i>
         </a>
     </div>
+    <% } %>
 
 </div>
 <% } %>
 <% } %>
 
+<% if(users=='null'){ %>
+<% }else{ %>
 <div class="card w-70 mt-4">
     <div class="card-body">
 
-        <form method="POST" action="/category" class="mt-4">
+
+        <form method="POST" action="/comment" class="mt-4">
+            <input type="hidden" name="id_post" value="<%= post.id_post %>" />
+            <input type="hidden" name="title_category" value="<%= titleCategory %>" />
+            <input type="hidden" name="title_post" value="<%= post.title_post %>" />
+
             <div class="mb-3">
                 <label for="comment" class="form-label">Comment</label>
                 <textarea type="text" class="form-control" id="comment" aria-describedby="comment" name="comment"
@@ -74,5 +84,5 @@ Forum tidak ada.<br> <a href="/category" class="alert-link fw-normal">&laquo;Kem
     </div>
 
 </div>
-
+<% } %>
 <% } %>

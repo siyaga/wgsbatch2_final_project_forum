@@ -25,16 +25,16 @@
                 <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
                     <h2>adaForum</h2>
                 </a>
-
+                <%= console.log(users) %>
                 <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                     <li><a href="/category" class="nav-link px-2 text-white">Kategori</a></li>
-                    <% if(user){ %>
+                    <% if(users=='null'){ %>
 
-
-                    <% }else if(user === undefined || user === null){ %>
+                    <% }else{ %>
                     <li><a href="/myforum" class="nav-link px-2 text-white">Forum Saya</a></li>
                     <li><a href="/setting-category" class="nav-link px-2 text-white">Setting Kategori</a></li>
                     <li><a href="/setting-user" class="nav-link px-2 text-white">Setting User</a></li>
+
                     <% } %>
                 </ul>
 
@@ -42,14 +42,15 @@
                     <input type="search" class="form-control form-control-primary" placeholder="Search..."
                         aria-label="Search">
                 </form>
-                <% if(user){ %>
-
+                <% if(users=='null'){ %>
                 <div class="text-end">
                     <a href="/users/login" class="btn btn-outline-light me-2">Login</a>
                     <a href="/users/register" class="btn btn-warning">Sign-up</a>
                 </div>
 
-                <% }else if(user === undefined || user === null){ %>
+
+                <% }else { %>
+
                 <div class="dropdown text-end">
                     <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
                         aria-expanded="false">
@@ -63,7 +64,6 @@
                         <li><a class="dropdown-item" href="/users/logout">Sign out</a></li>
                     </ul>
                 </div>
-
                 <% } %>
 
             </div>

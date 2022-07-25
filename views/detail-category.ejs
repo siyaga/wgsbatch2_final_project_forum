@@ -1,10 +1,11 @@
 <% if (forums.length < 1 ) { %>
 <p>Forum diskusi tidak ada</p>
 <% } else {%>
-<% for(const forum of forums) { %>
+
 <h1 class="text-center">Diskusi Tentang
-    <%= capitalize.words(forum.title_category) %>
+    <%= capitalize.words(title_category) %>
 </h1>
+<% for(const forum of forums) { %>
 <div class="card w-50 mt-4">
     <div class="card-body">
         <h5 class="card-title">
@@ -19,7 +20,7 @@
     <% if(forum.image === 'null' || forum.image === 'undefined') { %>
 
     <% }else { %>
-    <img src="/image/<%= forum.image %>" class="card-img-bottom" alt="...">
+    <img src="../image/<%= forum.image %>" class="card-img-bottom" alt="...">
     <% } %>
 
     <a href="/category/<%= forum.title_category %>/post/<%= forum.title_post %>" class="stretched-link"></a>
