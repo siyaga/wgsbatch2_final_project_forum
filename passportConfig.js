@@ -18,7 +18,11 @@ function initialize(passport) {
                         console.log(err);
                     }
                     if (isMatch) {
+                        pool.query(`INSERT INTO public.logs(
+                            id_user, username, activity)
+                            VALUES ( ${user.id_user}, '${user.username}', 'User Berhasil Login')`);
                         return done(null, user, {
+
                             message: `Berhasil Login Selemat Datang ${user.username}`
                         });
                     } else {

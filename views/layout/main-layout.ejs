@@ -56,10 +56,12 @@
                 <div class="dropdown text-end">
                     <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        <img src="../image/<%= users.image %> " alt="mdo" width="32" height="32" class="rounded-circle">
+                        <img src="../image/<%= users.image %>" alt="mdo" width="32" height="32" class="rounded-circle">
                     </a>
                     <ul class="dropdown-menu text-small">
-                        <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                        <li><a class="dropdown-item" href="/profile/<%= users.username %>">Profile</a></li>
+                        <li><a class="dropdown-item" href="/setting/<%= users.username %>">Setting</a></li>
+
                         <li>
                             <hr class="dropdown-divider">
                         </li>

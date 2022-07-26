@@ -17,7 +17,7 @@ Forum tidak ada.<br> <a href="/category" class="alert-link fw-normal">&laquo;Kem
         <% if(post.image === null || post.image === undefined) { %>
 
         <% }else { %>
-        <img src="/image/<%= post.image %>" class="rounded mx-0 d-block" width="40%" alt="...">
+        <img src="/image/<%= post.image %>" class="img-fluid" alt="Responsive image" alt="...">
         <% } %>
         <p class="card-text"><small class="text-muted">Owner <%= post.username %>
                 <%= moment(post.date).format('yyyy-MM-DD') %>, <%= moment(post.time).format('HH:MM') %></small></p>
@@ -40,29 +40,29 @@ Forum tidak ada.<br> <a href="/category" class="alert-link fw-normal">&laquo;Kem
         <p class="card-text"><%= comment.comment %> </p>
 
         <p class="card-text"><small class="text-muted">
-                <%= moment(comment.date).format('yyyy-MM-DD') %>, <%= moment(comment.time).format("HH:MM") %></small>
+                <%= moment(comment.date).format('yyyy-MM-DD') %>, <%= comment.time %></small>
         </p>
 
     </div>
     <% if(users=='null'){ %>
     <% }else if(users.role=='admin'){ %>
     <div class="text-end mb-10 mr-10">
-        <a href="/comment/edit/<%= comment.id_comment %>" class="btn btn-warning ml-1 badge mt-2"><i
-                class="bi bi-pencil-square"></i>
+        <a href="/category/<%= titleCategory %>/post/<%= post.title_post %>/comment/edit/<%= comment.id_comment %>"
+            class="btn btn-warning ml-1 badge mt-2"><i class="bi bi-pencil-square"></i>
         </a>
 
-        <a href="/category/<%= titleCategory %> /post/<%= post.title_post %>/comment/delete/<%= comment.id_comment %>  %>"
+        <a href="/category/<%= titleCategory %>/post/<%= post.title_post %>/comment/delete/<%= comment.id_comment %>  %>"
             class="btn btn-danger badge mt-2" onclick="return confirm('yakin Anda Menghapus comment ini  ?')"><i
                 class="bi bi-trash-fill"></i>
         </a>
     </div>
-    <% }else if(users.role=='user' && users.id_user==comment.id_user){ %>
+    <% }else if(users.role=='user' && users.username==comment.username){ %>
     <div class="text-end mb-10 mr-10">
-        <a href="/comment/edit/<%= comment.id_comment %>" class="btn btn-warning ml-1 badge mt-2"><i
-                class="bi bi-pencil-square"></i>
+        <a href="/category/<%= titleCategory %>/post/<%= post.title_post %>/comment/edit/<%= comment.id_comment %>"
+            class="btn btn-warning ml-1 badge mt-2"><i class="bi bi-pencil-square"></i>
         </a>
 
-        <a href="/category/<%= titleCategory %> /post/<%= post.title_post %>/comment/delete/<%= comment.id_comment %>  %>"
+        <a href="/category/<%= titleCategory %>/post/<%= post.title_post %>/comment/delete/<%= comment.id_comment %>  %>"
             class="btn btn-danger badge mt-2" onclick="return confirm('yakin Anda Menghapus comment ini  ?')"><i
                 class="bi bi-trash-fill"></i>
         </a>

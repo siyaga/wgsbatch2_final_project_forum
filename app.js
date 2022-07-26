@@ -229,6 +229,10 @@ app.post('/register', [
 
 // Melakukan Logout
 app.get('/users/logout', checkNotAuthenticated, (req, res) => {
+
+    pool.query(`INSERT INTO public.logs(
+        id_user, username, activity)
+        VALUES ( ${req.user.id_user}, '${req.user.username}', 'User Logout')`);
     req.logout(function (error) {
         if (error) {
             return next(error)
@@ -239,15 +243,18 @@ app.get('/users/logout', checkNotAuthenticated, (req, res) => {
     res.redirect("/users/login")
 
 })
-
+// Get Menuju halamana Profile
 app.get('/profile/:username', checkNotAuthenticated, (req, res) => {
+    pool.query(`INSERT INTO public.logs(
+        id_user, username, activity)
+        VALUES ( ${req.user.id_user}, '${req.user.username}', 'Profile')`);
     const username = req.params.username
-    const sql = `SELECT * FROM tb_users ORDER WHERE username ='${username}'`
+    const sql = `SELECT * FROM tb_users WHERE username ='${username}'`
     pool.query(sql, [], (error, results) => {
         if (error) {
             throw error
         }
-        const nama = results.rows[0].name
+        const nama = results.rows[0].nama
         res.render('profile', {
             title: `Hallo ${capitalize.words(nama)}`,
             layout: "layout/main-layout",
@@ -259,7 +266,31 @@ app.get('/profile/:username', checkNotAuthenticated, (req, res) => {
         })
     })
 })
+// Get Menuju halamana Profile
+app.get('/setting/:username', checkNotAuthenticated, (req, res) => {
 
+    const username = req.params.username
+
+    pool.query(`INSERT INTO public.logs(
+        id_user, username, activity)
+        VALUES ( ${req.user.id_user}, '${req.user.username}', 'Setting Profile')`);
+    const sql = `SELECT * FROM tb_users WHERE username ='${username}'`
+    pool.query(sql, [], (error, results) => {
+        if (error) {
+            throw error
+        }
+        const nama = results.rows[0].nama
+        res.render('profile', {
+            title: `${capitalize.words(nama)}`,
+            layout: "layout/main-layout",
+            profile: results.rows,
+            msg: req.flash('msg'),
+            users: authUser(req.user),
+            capitalize: capitalize
+
+        })
+    })
+})
 // Membuat Proses Category Page 
 app.get('/category', (req, res) => {
     const sql = "SELECT * FROM forum_category ORDER BY title_category ASC"
@@ -288,7 +319,7 @@ app.get('/category/:title_category', (req, res) => {
     // Mencari nama yang akan di edit lalu di masukan kedalam input di ejs
     const sql = `SELECT title_post,content, forum_category.title_category, forum_post.date, forum_post.image, tb_users.username FROM forum_post 
     INNER JOIN forum_category ON forum_post.id_category = forum_category.id_category 
-    INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user where forum_category.title_category='${title_category}' ORDER BY date ASC`
+    INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user where forum_category.title_category='${title_category}' ORDER BY date DESC`
     pool.query(sql, (error, result) => {
         if (error) {
             throw error
@@ -314,6 +345,7 @@ app.get('/category/:title_category/post/:title_post', async (req, res) => {
     const title_post = req.params.title_post
     const cariIdForum = await getIdForum(title_post)
     const findId = cariIdForum.id_post;
+
     const ambilIdForum = await getSelectComment(findId)
 
     const sql = `SELECT forum_post.id_post,tb_users.username,title_post,content,forum_post.date, forum_post.image FROM forum_post INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user WHERE title_post = '${title_post}'`;
@@ -332,9 +364,10 @@ app.get('/category/:title_category/post/:title_post', async (req, res) => {
 
 
 })
+// Add Commentar
 app.post('/comment', checkNotAuthenticated, async (req, res) => {
     try {
-        // Mengambil isi form yang di isikan oleh user
+
 
         const comment = req.body.comment;
         const id_post = await req.body.id_post;
@@ -342,6 +375,10 @@ app.post('/comment', checkNotAuthenticated, async (req, res) => {
         const title_category = req.body.title_category;
         const title_post = req.body.title_post;
 
+        // Mengambil isi form yang di isikan oleh user
+        pool.query(`INSERT INTO public.logs(
+            id_user, username, activity)
+            VALUES ( ${req.user.id_user}, '${req.user.username}', 'Menambahkan Komentar')`);
 
 
 
@@ -358,6 +395,70 @@ app.post('/comment', checkNotAuthenticated, async (req, res) => {
     }
 
 })
+// Menuju Update
+app.get('/category/:title_category/post/:title_post/comment/edit/:id_comment', async (req, res) => {
+    const id_commnet = req.params.id_comment;
+    const title_category = req.params.title_category;
+    const title_post = req.params.title_post;
+    const forumPost = await getPostName(title_post)
+    const cariIdForum = await getIdForum(title_post)
+    const findId = cariIdForum.id_post;
+
+    const ambilIdForum = await getSelectComment(findId)
+    const sql = `SELECT * FROM forum_comment WHERE id_comment=${id_commnet}`
+    pool.query(sql, [], (error, results) => {
+        if (error) {
+            throw error
+        }
+
+
+        res.render('edit-comment', {
+            users: authUser(req.user),
+            title: `${title_category}`,
+            layout: "layout/main-layout",
+            titleCategory: title_category,
+            post: forumPost,
+            commentar: results.rows[0],
+            comments: ambilIdForum,
+            moment: moment,
+            capitalize: capitalize,
+            msg: req.flash('msg')
+
+        })
+    })
+})
+// Update Commentar
+app.post('/comment/update', checkNotAuthenticated, async (req, res) => {
+    try {
+        // Mengambil isi form yang di isikan oleh user
+        pool.query(`INSERT INTO public.logs(
+            id_user, username, activity)
+            VALUES ( ${req.user.id_user}, '${req.user.username}', 'Melakukan Update Komentar')`);
+
+        const comment = req.body.comment;
+        const id_comment = req.body.id_comment;
+        const id_post = await req.body.id_post;
+        const userId = req.body.id_user;
+        const title_category = req.body.title_category;
+        const title_post = req.body.title_post;
+
+
+
+
+
+        //Menggunakan query insert untuk memasukan data atau mengadd data
+        const dataAdd = await pool.query(`UPDATE public.forum_comment
+        SET comment='${comment}', date=now(), "time"=now()
+        WHERE id_comment=${id_comment}`)
+        dataAdd;
+        req.flash('msg', `Berhasil Update Commentar`)
+        res.redirect(`/category/${title_category}/post/${title_post}`);
+    } catch (err) {
+        console.error(err.message)
+    }
+
+})
+// Delete Commentar
 app.get('/category/:title_category/post/:title_post/comment/delete/:id_comment', async (req, res) => {
 
 
@@ -366,8 +467,8 @@ app.get('/category/:title_category/post/:title_post/comment/delete/:id_comment',
 
         const id_comment = req.params.id_comment;
         const deleteComment = await deleteCommentId(id_comment)
-        const title_category = req.body.title_category;
-        const title_post = req.body.title_post;
+        const title_category = req.params.title_category;
+        const title_post = req.params.title_post;
 
         const sql = `DELETE FROM forum_comment WHERE id_comment = '${title_post}'`
 
@@ -378,7 +479,6 @@ app.get('/category/:title_category/post/:title_post/comment/delete/:id_comment',
                 res.status(404)
                 res.send('<h1>404</h1>')
             } else {
-
                 deleteComment;
                 req.flash('msg', `Berhasil Melakukan Delete Commentar`)
                 res.redirect(`/category/${title_category}/post/${title_post}`);
@@ -392,7 +492,58 @@ app.get('/category/:title_category/post/:title_post/comment/delete/:id_comment',
     }
 
 })
+// Update Commentar
+app.post('/setting-category/update', checkNotAuthenticated, [
+    body('title_category').custom(async (valueTitle, {
+        req
+    }) => {
+        try {
 
+
+            // Mencari nama yang sama di query
+
+            const queryDuplikat = await pool.query(`SELECT * FROM forum_category WHERE title_category = '${valueTitle.toLowerCase()}'`)
+            const duplikat = queryDuplikat.rows[0]
+
+            if (valueTitle !== req.body.oldCategory && duplikat) {
+                throw new Error(`Kategori ${valueTitle} sudah Digunakan! `);
+
+            }
+
+            return true;
+        } catch (error) {
+            console.log(err)
+        }
+    }),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+
+        res.render('edit-category', {
+            title: 'Form Ubah Kategori',
+            layout: 'layout/main-layout',
+            errors: errors.array(),
+            category: req.body,
+            users: authUser(req.user),
+        });
+
+    } else {
+        pool.query(`INSERT INTO public.logs(
+            id_user, username, activity)
+            VALUES ( ${req.user.id_user}, '${req.user.username}', 'Melakukan Update Kategori')`);
+
+        const oldCategory = req.body.oldCategory
+        const title_category = req.body.title_category
+
+        const newUpdate = await pool.query(`UPDATE forum_category SET title_category = '${title_category}', date=now(), time=now() WHERE title_category = '${oldCategory}'`)
+        newUpdate;
+        req.flash('msg', 'Data  Kategori berhasil di ubah')
+        res.redirect('/setting-category')
+
+    }
+
+
+})
 
 
 // Proses Delete forum
@@ -400,7 +551,7 @@ app.get('/myforum/delete/:title_post', checkNotAuthenticated, async (req, res) =
 
     const title_post = req.params.title_post;
     const getIdForums = await getIdForum(title_post);
-    const deleteComment = await deleteCommentPosting(getIdForums)
+    const deleteComment = await deleteCommentPosting(getIdForums.id_post)
 
     const sql = `DELETE FROM forum_post WHERE title_post = '${title_post}'`
 
@@ -413,7 +564,7 @@ app.get('/myforum/delete/:title_post', checkNotAuthenticated, async (req, res) =
         } else {
             deleteComment;
             result.rows[0]
-            fs.unlinkSync(`./public/image/${postNamaImage.image}`)
+
             req.flash('msg', `${title_post} berhasil di hapus`)
             res.redirect('/myforum')
         }
@@ -649,7 +800,10 @@ app.get('/myforum/delete/:title_post', checkNotAuthenticated, async (req, res) =
         } else {
             deleteComment;
             result.rows[0]
-            //fs.unlinkSync(`../public/image/${}`);
+            // if(variabel != null) {
+            //      fs.unlinkSync(`../public/image/${$}`);
+            // }
+
             req.flash('msg', `${title_post} berhasil di hapus`)
             res.redirect('/myforum')
         }
@@ -692,7 +846,7 @@ app.get('/setting-category/add', checkNotAuthenticated, (req, res) => {
 
 })
 
-// Proses menuju form tambah category
+// Proses menuju form Edit category
 app.get('/setting-category/edit/:title_category', checkNotAuthenticated, (req, res) => {
     const title_category = req.params.title_category;
     const sql = `SELECT title_category FROM forum_category WHERE title_category ='${title_category}'`
@@ -759,27 +913,36 @@ app.post('/setting-category/update', checkNotAuthenticated, [
 
 
 // Proses Delete User
-app.get('/setting-category/delete/:title_category', checkNotAuthenticated, (req, res) => {
+app.get('/setting-category/delete/:title_category', checkNotAuthenticated, async (req, res) => {
 
     const title_category = req.params.title_category;
+    const cariIdCategory = await getSelectAllCategory(title_category)
+    const cariIdPost = await getPostCategory(cariIdCategory.id_category)
+    const getIdForums = await getIdForum(cariIdPost.title_post);
+    console.log(cariIdPost);
+    console.log(getIdForums);
+    const deleteComment = await deleteCommentPosting(cariIdPost[0].id_post)
+    const hapusPostingUser = await deletePostingCategory(cariIdCategory.id_category)
+    const deleteCategory = await deleteCategoryId(cariIdCategory.id_category)
 
-    const sql = `DELETE FROM forum_category WHERE title_category = '${title_category}'`
 
 
-    pool.query(sql, (err, result) => {
-        if (!title_category) {
-            res.status(404)
-            res.send('<h1>404</h1>')
-        } else {
-            req.flash('msg', `${title_category} berhasil di hapus`)
-            res.redirect('/setting-category')
-        }
+    if (!title_category) {
+        res.status(404)
+        res.send('<h1>404</h1>')
+    } else {
+        deleteComment
+        hapusPostingUser
+        deleteCategory
+        req.flash('msg', `${title_category} berhasil di hapus`)
+        res.redirect('/setting-category')
+    }
 
-    })
+
 })
 
 // Insert Data category 
-app.post('/category', checkAuthenticated, [
+app.post('/category', checkNotAuthenticated, [
     body('title_category').custom(async (valueTitle) => {
 
         // Mencari nama yang sama di query
@@ -1035,30 +1198,27 @@ app.get('/setting-user/delete/:username', checkNotAuthenticated, async (req, res
 
     const username = req.params.username;
     const cekIdUsername = await getIdUsername(username)
-    const hapusCommentUser = await deleteCommentPosting(cekIdUsername.id_user)
-    const hapusPostingUser = await deletePostingUser(cekIdUsername.id_user)
+    await deleteCommentUser(cekIdUsername.id_user)
+    await deletePostingUser(cekIdUsername.id_user)
+    await deleteCommentUserId(cekIdUsername.id_user)
 
-    const sqlUser = `DELETE FROM tb_users WHERE username = '${username}'`
+    if (!username) {
+        res.status(404)
+        res.send('<h1>404</h1>')
+    }
 
 
-    pool.query(sqlUser, (err, result) => {
-        if (!username) {
-            res.status(404)
-            res.send('<h1>404</h1>')
-        } else {
-
-            hapusCommentUser
-            hapusPostingUser
-            result.rows[0]
-            req.flash('msg', `${username} berhasil di hapus`)
-            res.redirect('/setting-user')
-        }
+    // hapusCommentUser
+    // hapusPostingUser
+    req.flash('msg', `${username} berhasil di hapus`)
+    res.redirect('/setting-user')
 
 
 
 
 
-    })
+
+
 })
 
 // Myforum 
@@ -1111,12 +1271,50 @@ async function getIdForum(idForum) {
     return idForum;
 
 }
-
+// function mencari semua data forum
 async function getSelectAllForum(titleForum) {
     try {
         const sql = `SELECT * FROM public.forum_post WHERE title_post ='${titleForum}'`
         const query = await pool.query(sql)
         titleForum = query.rows[0]
+
+
+
+
+    } catch (err) {
+        console.error(err);
+
+    }
+
+    return titleForum;
+
+}
+
+
+// function mencari semua data forum
+async function getSelectAllCategory(titleForum) {
+    try {
+        const sql = `SELECT * FROM forum_category WHERE title_category ='${titleForum}'`
+        const query = await pool.query(sql)
+        titleForum = query.rows[0]
+
+
+
+
+    } catch (err) {
+        console.error(err);
+
+    }
+
+    return titleForum;
+
+}
+// function mencari semua data forum
+async function getPostCategory(titleForum) {
+    try {
+        const sql = `SELECT * FROM forum_post WHERE id_category =${titleForum}`
+        const query = await pool.query(sql)
+        titleForum = query.rows
 
 
 
@@ -1150,7 +1348,7 @@ async function getIdUsername(idPostUsername) {
 // Mencari postingan user
 async function getIdPostUser(idUser) {
     try {
-        const sql = `SELECT * FROM forum_post WHERE id_post ='${idUser}'`
+        const sql = `SELECT * FROM forum_post WHERE id_post =${idUser}`
         const query = await pool.query(sql)
         idUser = query.rows[0]
 
@@ -1169,7 +1367,26 @@ async function getIdPostUser(idUser) {
 // Melakukan delete di postingan berdasarkan user_id
 async function deletePostingUser(idUser) {
     try {
-        const sql = `DELETE FROM forum_post WHERE id_user = '${idUser}'`
+        const sql = `DELETE FROM public.forum_post
+        WHERE id_user = ${idUser}`
+
+        const query = await pool.query(sql)
+        idUser = query.rows[0]
+
+
+
+
+    } catch (err) {
+        console.error(err);
+
+    }
+
+    return idUser;
+}
+// Melakukan delete di postingan berdasarkan user_id
+async function deleteCommentUser(idUser) {
+    try {
+        const sql = `DELETE FROM forum_comment WHERE id_user = ${idUser}`
         const query = await pool.query(sql)
         idUser = query.rows[0]
 
@@ -1188,7 +1405,7 @@ async function deletePostingUser(idUser) {
 // Melakukan delete berdasarkan user
 async function deleteCommentPosting(idUser) {
     try {
-        const sql = `DELETE FROM forum_comment WHERE id_user = '${idUser}'`
+        const sql = `DELETE FROM forum_comment WHERE id_post = ${idUser}`
         const query = await pool.query(sql)
         idUser = query.rows[0]
 
@@ -1203,10 +1420,65 @@ async function deleteCommentPosting(idUser) {
     return idUser;
 }
 
+// Melakukan delete berdasarkan user
+async function deleteCommentUserId(idUser) {
+    try {
+        const sql = `DELETE FROM tb_users WHERE id_user = ${idUser}`
+        const query = await pool.query(sql)
+        idUser = query.rows[0]
+
+
+
+
+    } catch (err) {
+        console.error(err);
+
+    }
+
+    return idUser;
+}
+
+// Melakukan delete berdasarkan id_category
+async function deleteCategoryId(idCategory) {
+    try {
+        const sql = `DELETE FROM forum_category WHERE id_category = ${idCategory}`
+        const query = await pool.query(sql)
+        idCategory = query.rows[0]
+
+
+
+
+    } catch (err) {
+        console.error(err);
+
+    }
+
+    return idCategory;
+}
+
+// Melakukan delete di postingan berdasarkan id_category
+async function deletePostingCategory(idUser) {
+    try {
+        const sql = `DELETE FROM forum_post WHERE id_category = ${idUser}`
+        const query = await pool.query(sql)
+        idUser = query.rows[0]
+
+
+
+
+    } catch (err) {
+        console.error(err);
+
+    }
+
+    return idUser;
+}
+
+
 // Melakukan delete id_comment
 async function deleteCommentId(idComment) {
     try {
-        const sql = `DELETE FROM forum_comment WHERE id_comment = '${idComment}'`
+        const sql = `DELETE FROM forum_comment WHERE id_comment = ${idComment}`
         const query = await pool.query(sql)
         idComment = query.rows[0]
 
@@ -1219,6 +1491,24 @@ async function deleteCommentId(idComment) {
     }
 
     return idComment;
+}
+
+// Melakukan delete id_comment
+async function deleteUserByUsername(username) {
+    try {
+        const sql = `DELETE FROM tb_users WHERE username = '${username}'`
+        const query = await pool.query(sql)
+        username = query.rows[0]
+
+
+
+
+    } catch (err) {
+        console.error(err);
+
+    }
+
+    return username;
 }
 
 async function getImageName(imageName) {
@@ -1247,6 +1537,24 @@ function getNameCategory(idCategory) {
 
     })
     return idCategory
+}
+
+async function getPostName(titlePost) {
+
+    try {
+        const sql = `SELECT forum_post.id_post,tb_users.username,title_post,content,forum_post.date, forum_post.image FROM forum_post INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user WHERE title_post = '${titlePost}'`
+        const query = await pool.query(sql)
+        titlePost = query.rows[0]
+
+
+
+
+    } catch (err) {
+        console.error(err);
+
+    }
+
+    return titlePost;
 }
 
 

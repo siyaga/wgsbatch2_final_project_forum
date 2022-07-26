@@ -17,7 +17,7 @@
         <% if(post.image === 'null' || post.image === 'undefined') { %>
 
         <% }else { %>
-        <img src="../image/<%= post.image %>" class="rounded mx-0 d-block" width="30%" alt="...">
+        <img src="../image/<%= post.image %>" class="img-fluid" alt="Responsive image" alt="...">
         <% } %>
         <p class="card-text"><small class="text-muted"> <%= post.username %>
                 <%= moment(post.date).format('yyyy-MM-DD') %>, <%= moment(post.time).format('HH:MM') %></small></p>
