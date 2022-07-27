@@ -1,4 +1,8 @@
 <h1>Forum List : </h1>
+
+
+<!-- Error Masih Penentuan Role -->
+<% if (users.role == 'admin') { %>
 <a href="/myforum/add" class="btn btn-primary mt-3 mb-3"><i class="bi bi-plus-square"></i> Add Forum Baru</a>
 
 <% if (msg.length !== 0) { %>
@@ -6,9 +10,8 @@
     <%= msg %>
 </div>
 <% } %>
-
 <!-- Membuat tabel menggunakan bootstrap -->
-<table class="table table-dark table-striped">
+<table class="table table-sm" style="background-color: #fff;">
     <thead>
         <tr>
             <th scope="col">No</th>
@@ -33,11 +36,15 @@
         <tr>
             <!-- Memanggil dan nomor -->
             <th><%= i++ %> </th>
-            <td><%= forum.title_post %> </td>
+            <td><%= forum.title_post.substring(0, 50) %> </td>
             <td><%= forum.title_category %> </td< />
-            <td><%= forum.content.substring(0, 50) %> </td>
-            <td><%= moment(forum.date).format('YYYY-MM-DD') %> <%= moment(forum.time).format('HH:MM') %> </td>
-            <td><%= forum.image %> </td>
+            <td><%= forum.content.substring(0, 50) %>... %> </td>
+            <td><%= moment(forum.date).format('YYYY-MM-DD') %> <%= forum.time %> </td>
+            <% if (forum.image == 'null') { %>
+            <td>-</td>
+            <% } else{%>
+            <td><img src="./image/<%= forum.image %>" width="70"> </td>
+            <% } %>
             <td><%= forum.username %> </td>
             <td>
                 <!-- View -->
@@ -45,11 +52,14 @@
                     class="btn btn-primary badge mt-1 "><i class="bi bi-card-heading"></i>
                     View</a>
                 <br />
+                <% if (users.role == 'admin' && users.id_user == forum.id_user) { %>
                 <!-- Menambahkan update dan delete  -->
                 <a href="/myforum/edit/<%= forum.title_post %>" class="btn btn-warning ml-1 badge mt-2"><i
                         class="bi bi-pencil-square"></i>
                     Update</a>
                 <br />
+                <% } %>
+
                 <a href="/myforum/delete/<%= forum.title_post %>" class="btn btn-danger badge mt-2"
                     onclick="return confirm('yakin Anda Menghapus Forum tentang  <%= forum.title_post %>?')"><i
                         class="bi bi-trash-fill"></i>
@@ -64,3 +74,73 @@
         </tr>
     </tbody>
 </table>
+<% }  %>
+
+<% if (users.role == 'user') { %>
+<a href="/myforum/add" class="btn btn-primary mt-3 mb-3"><i class="bi bi-plus-square"></i> Add Forum Baru</a>
+
+<% if (msg.length !== 0) { %>
+<div class="alert alert-success" role="alert">
+    <%= msg %>
+</div>
+<% } %>
+<!-- Membuat tabel menggunakan bootstrap -->
+<table class="table table-sm" style="background-color: #fff;">
+    <thead>
+        <tr>
+            <th scope="col">No</th>
+            <th scope="col text-center">Judul Forum</th>
+            <th scope="col text-center">Kategori</th>
+            <th scope="col text-center">Konten</th>
+            <th scope="col text-center">Date</th>
+            <th scope="col text-center">image</th>
+            <th scope="col text-center">action</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        <tr>
+            <% if (forumsUsers.length < 1 ) { %>
+            <p>Forum Data Tidak ada</p>
+            <% } else {%>
+            <!-- Membuat nomor angka variable let i -->
+            <% let i = 1; %>
+            <% for(const forumsUser of forumsUsers) { %>
+        <tr>
+            <!-- Memanggil dan nomor -->
+            <th><%= i++ %> </th>
+            <td><%= forumsUser.title_post %> </td>
+            <td><%= forumsUser.title_category %> </td< />
+            <td><%= forumsUser.content.substring(0, 50) %> </td>
+            <td><%= moment(forumsUser.date).format('YYYY-MM-DD') %> <%= moment(forumsUser.time).format('HH:MM') %> </td>
+            <% if (forumsUser.image == 'null') { %>
+            <td>-</td>
+            <% } else{%>
+            <td><img src="./image/<%= forumsUser.image %>" width="70"> </td>
+            <% } %>
+            <td>
+                <!-- View -->
+                <a href="/category/<%= forumsUser.title_category %>/post/<%= forumsUser.title_post %>"
+                    class="btn btn-primary badge mt-1 "><i class="bi bi-card-heading"></i>
+                    View</a>
+                <br />
+                <!-- Menambahkan update dan delete  -->
+                <a href="/myforum/edit/<%= forumsUser.title_post %>" class="btn btn-warning ml-1 badge mt-2"><i
+                        class="bi bi-pencil-square"></i>
+                    Update</a>
+                <br />
+                <a href="/myforum/delete/<%= forumsUser.title_post %>" class="btn btn-danger badge mt-2"
+                    onclick="return confirm('yakin Anda Menghapus Forum tentang  <%= forumsUser.title_post %>?')"><i
+                        class="bi bi-trash-fill"></i>
+                    Delete</a>
+            </td>
+        </tr>
+        <% } %>
+        <% } %>
+        </tr>
+        <tr>
+
+        </tr>
+    </tbody>
+</table>
+<% } %>

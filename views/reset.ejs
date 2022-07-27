@@ -1,0 +1,45 @@
+<div class="container">
+    <div class="row">
+        <h1 class="page-header">Reset Password</h1>
+
+        <!-- Menampilkan Error Pada Penginputan-->
+        <% if (typeof errors != 'undefined') { %>
+        <div class="alert alert-danger" role="alert">
+            <ul>
+                <% errors.forEach(error => { %>
+                <li><%= error.msg %></li>
+                <% }) %>
+            </ul>
+        </div>
+        <% } %>
+
+    </div>
+</div>
+
+
+
+<form method="POST" action="/reset" class="mt-4" enctype="multipart/form-data">
+    <input type="hidden" name="oldUsername" value="<%= selectUser.oldUsername || selectUser.username %>">
+    <input type="hidden" name="oldNama" value="<%= selectUser.oldNama || selectUser.nama %>">
+    <input type="hidden" name="oldEmail" value="<%= selectUser.oldEmail || selectUser.email %>">
+    <input type="hidden" name="oldImage" value="<%= selectUser.oldImage || selectUser.image %>">
+    <input type="hidden" name="id_user" value="<%=  selectUser.id_user %>">
+
+
+    <div class="mb-3">
+        <label for="Password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="Password" name="password" placeholder="password" required>
+    </div>
+    <div class="mb-3">
+        <label for="Password2" class="form-label">Comfirm Password</label>
+        <input type="password" class="form-control" id="Password2" name="password2" placeholder="Comfirm Password"
+            required>
+    </div>
+
+
+
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<div class="container">
+</div>

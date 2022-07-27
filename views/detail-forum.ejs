@@ -14,13 +14,14 @@ Forum tidak ada.<br> <a href="/category" class="alert-link fw-normal">&laquo;Kem
     <div class="card-body">
         <h3 class="card-title"><%= capitalize.words(post.title_post) %></h3>
         <p class="card-text"><%= post.content %> </p>
-        <% if(post.image === null || post.image === undefined) { %>
+        <% if(post.image === 'null' || post.image === undefined) { %>
 
         <% }else { %>
         <img src="/image/<%= post.image %>" class="img-fluid" alt="Responsive image" alt="...">
         <% } %>
         <p class="card-text"><small class="text-muted">Owner <%= post.username %>
-                <%= moment(post.date).format('yyyy-MM-DD') %>, <%= moment(post.time).format('HH:MM') %></small></p>
+                <%= moment(post.date).format('DD-MM-YYYY') %>,
+                <%= moment(post.time).format('HH:MM') %></small></p>
     </div>
 
 
@@ -44,9 +45,25 @@ Forum tidak ada.<br> <a href="/category" class="alert-link fw-normal">&laquo;Kem
         </p>
 
     </div>
-    <% if(users=='null'){ %>
-    <% }else if(users.role=='admin'){ %>
     <div class="text-end mb-10 mr-10">
+        <% if (users.role=='admin' && users.username==comment.username ) { %>
+
+        <a href="/category/<%= titleCategory %>/post/<%= post.title_post %>/comment/edit/<%= comment.id_comment %>"
+            class="btn btn-warning ml-1 badge mt-2"><i class="bi bi-pencil-square"></i>
+        </a>
+
+        <% } %>
+        <% if(users=='null'){ %>
+        <% }else if(users.role=='admin' ){ %>
+
+        <a href="/category/<%= titleCategory %>/post/<%= post.title_post %>/comment/delete/<%= comment.id_comment %>  %>"
+            class="btn btn-danger badge mt-2" onclick="return confirm('yakin Anda Menghapus comment ini  ?')"><i
+                class="bi bi-trash-fill"></i>
+        </a>
+
+
+        <% }else if(users.role=='user' && users.username==comment.username){ %>
+
         <a href="/category/<%= titleCategory %>/post/<%= post.title_post %>/comment/edit/<%= comment.id_comment %>"
             class="btn btn-warning ml-1 badge mt-2"><i class="bi bi-pencil-square"></i>
         </a>
@@ -55,21 +72,11 @@ Forum tidak ada.<br> <a href="/category" class="alert-link fw-normal">&laquo;Kem
             class="btn btn-danger badge mt-2" onclick="return confirm('yakin Anda Menghapus comment ini  ?')"><i
                 class="bi bi-trash-fill"></i>
         </a>
+
+
+        <% } %>
+
     </div>
-    <% }else if(users.role=='user' && users.username==comment.username){ %>
-    <div class="text-end mb-10 mr-10">
-        <a href="/category/<%= titleCategory %>/post/<%= post.title_post %>/comment/edit/<%= comment.id_comment %>"
-            class="btn btn-warning ml-1 badge mt-2"><i class="bi bi-pencil-square"></i>
-        </a>
-
-        <a href="/category/<%= titleCategory %>/post/<%= post.title_post %>/comment/delete/<%= comment.id_comment %>  %>"
-            class="btn btn-danger badge mt-2" onclick="return confirm('yakin Anda Menghapus comment ini  ?')"><i
-                class="bi bi-trash-fill"></i>
-        </a>
-    </div>
-
-    <% } %>
-
 
 </div>
 <% } %>

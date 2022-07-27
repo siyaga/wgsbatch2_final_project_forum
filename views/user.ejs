@@ -1,7 +1,7 @@
 <!-- mainbody -->
 
 <h1>User List : </h1>
-<a href="/setting-user/add" class="btn btn-primary mt-3 mb-3"><i class="bi bi-plus-square"></i> Add Kategori
+<a href="/setting-user/add" class="btn btn-primary mt-3 mb-3"><i class="bi bi-plus-square"></i> Add User
     Baru</a>
 
 <% if (msg.length !== 0) { %>
@@ -10,7 +10,7 @@
 </div>
 <% } %>
 <!-- Membuat tabel menggunakan bootstrap -->
-<table class="table table-dark table-striped">
+<table class="table table-sm" style="background-color: #fff;">
     <thead>
         <tr>
             <th scope="col">No</th>
@@ -36,7 +36,7 @@
             <td><%= user.nama %> </td>
             <td><%= user.email %> </td>
             <td>
-                <%= moment(user.date).format('YYYY-MM-DD') %>
+                <%= moment(user.date).format('YYYY-MM-DD') %> <%= user.time %>
             </td>
 
             <td>

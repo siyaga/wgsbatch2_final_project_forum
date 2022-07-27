@@ -20,11 +20,10 @@
         <img src="../image/<%= post.image %>" class="img-fluid" alt="Responsive image" alt="...">
         <% } %>
         <p class="card-text"><small class="text-muted"> <%= post.username %>
-                <%= moment(post.date).format('DD-MM-YYYY') %>,
-                <%= moment(post.time).format('HH:MM') %></small></p>
+                <%= moment(post.date).format('yyyy-MM-DD') %>, <%= moment(post.time).format('HH:MM') %></small></p>
 
     </div>
-    <%= console.log(moment(post.time).format('HH:MM')) %>
+
     <a href="/category/<%= post.title_category %>/post/<%= post.title_post %>" class="stretched-link"></a>
 </div>
 <% } %>

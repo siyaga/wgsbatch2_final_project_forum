@@ -18,7 +18,7 @@
 <% let isiData; %>
 <% if(locals.data) { isiData = data} %>
 
-<form method="POST" action="/setting-user/register" class="mt-4">
+<form method="POST" action="/setting-user/register" class="mt-4" enctype="multipart/form-data">
     <div class="mb-3">
         <label for="username" class="form-label">Username</label>
         <input type="text" class="form-control" id="username" aria-describedby="username" name="username"
@@ -42,6 +42,24 @@
         <label for="Password2" class="form-label">Comfirm Password</label>
         <input type="password" class="form-control" id="Password2" name="password2" placeholder="Comfirm Password"
             required>
+    </div>
+
+    <div class="mb-3">
+        <label for="image" class="form-label">Image </label>
+
+        <input type="file" accept="image/png, image/jpeg, image/jpg" class="form-control" id="image" name="image">
+
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="select">Role</label>
+        <select class="form-select" id="select" name="role" value="<%= isiData?.role %>" required>
+            <option selected>Pilih Kategori</option>
+            <option value="user">user</option>
+            <option value="admin">admin</option>
+
+
+        </select>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>

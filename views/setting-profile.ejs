@@ -1,6 +1,7 @@
 <div class="container">
     <div class="row">
-        <h1 class="page-header">Update User</h1>
+        <h1 class="page-header">Update Profile</h1>
+
         <!-- Menampilkan Error Pada Penginputan-->
         <% if (typeof errors != 'undefined') { %>
         <div class="alert alert-danger" role="alert">
@@ -17,16 +18,24 @@
 
 
 
-<form method="POST" action="/setting-user/update" class="mt-4" enctype="multipart/form-data">
+<form method="POST" action="/setting-profile/update" class="mt-4" enctype="multipart/form-data">
     <input type="hidden" name="oldUsername" value="<%= selectUser.oldUsername || selectUser.username %>">
     <input type="hidden" name="oldNama" value="<%= selectUser.oldNama || selectUser.nama %>">
     <input type="hidden" name="oldEmail" value="<%= selectUser.oldEmail || selectUser.email %>">
-    <input type="hidden" name="oldPassword" value="<%= selectUser.oldPassword || selectUser.password %>">
     <input type="hidden" name="oldImage" value="<%= selectUser.oldImage || selectUser.image %>">
-    <input type="hidden" name="oldRole" value="<%= selectUser.oldRole || selectUser.role %>">
     <input type="hidden" name="id_user" value="<%=  selectUser.id_user %>">
+    <div class="col text-center">
+        <img src="../image/<%= users.image %>%>" alt="<%= users.nama %> " class="img-thumbnail rounded-circle"
+            width="200px">
+    </div>
 
 
+    <div class="mb-3">
+        <label for="image" class="form-label">Image </label>
+
+        <input type="file" accept="image/png, image/jpeg, image/jpg" class="form-control" id="image" name="image">
+
+    </div>
 
     <div class="mb-3">
         <label for="Title" class="form-label">Username</label>
@@ -44,42 +53,8 @@
         <input type="email" class="form-control" id="email" aria-describedby="email" name="email" placeholder="Email"
             value="<%= selectUser.email %>" required>
     </div>
-    <div class="mb-3">
-        <label for="Password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="Password" name="password" placeholder="password" required>
-    </div>
-    <div class="mb-3">
-        <label for="Password2" class="form-label">Comfirm Password</label>
-        <input type="password" class="form-control" id="Password2" name="password2" placeholder="Comfirm Password"
-            required>
-    </div>
-
-    <div class="mb-3">
-        <label for="image" class="form-label">Image </label>
-
-        <input type="file" accept="image/png, image/jpeg, image/jpg" class="form-control" id="image" name="image"
-            value="<%= selectUser.image %>">
-
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label" for="select">Role</label>
-        <select class="form-select" id="select" name="role" value="<%= selectUser.role %>" required>
-
-            <% if (selectUser.role=='admin') { %>
-            <option>Pilih Kategori</option>
-            <option value="user">user</option>
-            <option selected value="admin">admin</option>
-            <% } %>
-            <% if (selectUser.role=='user') { %>
-            <option>Pilih Kategori</option>
-            <option selected value="user">user</option>
-            <option value="admin">admin</option>
-            <% } %>
 
 
-        </select>
-    </div>
 
 
 

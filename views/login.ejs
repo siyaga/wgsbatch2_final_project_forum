@@ -1,6 +1,11 @@
 <div class="container">
     <div class="row">
         <h1 class="page-header">Login</h1>
+        <% if (messages.msg) { %>
+        <div class="alert alert-success" role="alert">
+            <%= messages.msg %>
+        </div>
+        <% } %>
         <% if (messages.success_msg) { %>
         <div class="alert alert-danger" role="alert">
             <%= messages.success_msg %>
@@ -24,6 +29,3 @@
     </div>
     <button type="submit" class="btn btn-primary" value="Login">Submit</button>
 </form>
-<div class="container mt-4 ">
-    <div class="row"><a href="/users/register">Belum punya akun ? daftar kelik disini</a></div>
-</div>

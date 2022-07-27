@@ -19,8 +19,8 @@ function initialize(passport) {
                     }
                     if (isMatch) {
                         pool.query(`INSERT INTO public.logs(
-                            id_user, username, activity)
-                            VALUES ( ${user.id_user}, '${user.username}', 'User Berhasil Login')`);
+                            id_user, username, nama, activity)
+                     VALUES ( ${user.id_user}, '${user.username}','${user.nama}', '${user.username} Berhasil Login')`);
                         return done(null, user, {
 
                             message: `Berhasil Login Selemat Datang ${user.username}`

@@ -1,0 +1,42 @@
+<h1>Logs List : </h1>
+
+<!-- Membuat tabel menggunakan bootstrap -->
+<table class="table table-sm" style="background-color: #fff;">
+    <thead>
+        <tr>
+            <th scope="col">No</th>
+            <th scope="col text-center">id_user</th>
+            <th scope="col text-center">username</th>
+            <th scope="col text-center">nama</th>
+            <th scope="col text-center">activity</th>
+            <th scope="col text-center">date</th>
+            <th scope="col text-center">time</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        <tr>
+            <% if (logs.length < 1 ) { %>
+            <p>Data Logs Tidak ada</p>
+            <% } else {%>
+            <!-- Membuat nomor angka variable let i -->
+            <% let i = 1; %>
+            <% for(const log of logs) { %>
+        <tr>
+            <!-- Memanggil dan nomor -->
+            <th><%= i++ %> </th>
+            <td><%= log.id_user %> </td>
+            <td><%= log.username %> </td< />
+            <td><%= log.nama %> </td>
+            <td><%= log.activity %> </td>
+            <td><%= moment(log.date).format('YYYY-MM-DD') %></td>
+            <td><%= log.time %> </td>
+        </tr>
+        <% } %>
+        <% } %>
+        </tr>
+        <tr>
+
+        </tr>
+    </tbody>
+</table>

@@ -19,7 +19,8 @@
         <img src="../image/<%= forum.image %>" class="img-fluid" alt="Responsive image" alt="...">
         <% } %>
         <p class="card-text"><small class="text-muted"> <%= forum.username %>
-                <%= moment(forum.date).format('yyyy-MM-DD') %>, <%= moment(forum.time).format('HH:MM') %></small></p>
+                <%= moment(forum.date).format('DD-MM-YYYY') %>,
+                <%= moment(forum.time).format('HH:MM') %></small></p>
     </div>
 
 

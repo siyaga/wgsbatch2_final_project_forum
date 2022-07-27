@@ -17,6 +17,7 @@
 
 
 <form method="POST" action="/myforum/update" class="mt-4" enctype="multipart/form-data">
+    <input type="hidden" name="oldCategory" value="<%= getForum.oldCategory || getForum.id_category %>">
     <input type="hidden" name="oldTitlePost" value="<%= getForum.oldTitlePost || getForum.title_post %>">
     <input type="hidden" name="oldContent" value="<%= getForum.oldContent || getForum.content %>">
     <input type="hidden" name="oldImage" value="<%= getForum.oldImage || getForum.image %>">
@@ -25,12 +26,11 @@
     <fieldset>
         <div class="mb-3">
             <label class="form-label" for="select">Kategori</label>
-            <select class="form-select" id="select" name="category" value="<%= getForum.title_post %>" required>
-                <option disabled selected>Pilih Kategori</option>
+            <select class="form-select" id="select" name="category" value="<%= getForum.id_category %>">
+                <option value="" selected>Pilih Kategori</option>
                 <% if (categorys.length < 1 ) { %>
                 <p>Kategori Data Tidak Ada</p>
                 <% } else {%>
-                <%= console.log(getForum.id_category) %>
                 <% for(const category of categorys) { %>
 
                 <option value="<%= category.id_category %>">
