@@ -6,13 +6,14 @@ Forum tidak ada.<br> <a href="/category" class="alert-link fw-normal">&laquo;Kem
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item"><a href="/category/<%= titleCategory%>"><%= titleCategory%></a></li>
-                <li class="breadcrumb-item active" aria-current="page"><%= capitalize.words(post.title_post) %></li>
+                <li class="breadcrumb-item"><a
+                        href="/category/<%= titleCategory%>"><%= capitalize.words(titleCategory)%></a></li>
+                <li class="breadcrumb-item active" aria-current="page"><%= post.title_post %></li>
             </ol>
         </nav>
     </div>
     <div class="card-body">
-        <h3 class="card-title"><%= capitalize.words(post.title_post) %></h3>
+        <h3 class="card-title"><%= post.title_post %></h3>
         <p class="card-text"><%= post.content %> </p>
         <% if(post.image === null || post.image === undefined) { %>
 

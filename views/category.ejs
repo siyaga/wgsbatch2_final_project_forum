@@ -8,9 +8,14 @@ Kategori tidak ada.<br>
 
     <div class="card-body">
         <% for(const category of categorys) { %>
-        <h5 class="card-title"><a
-                href="/category/<%= category.title_category %>"><%= capitalize.words(category.title_category)%></a>
-        </h5>
+        <div class="card" style="width: 90%; text-align: center;">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <h3><%= capitalize.words(category.title_category)%></h3>
+                </li>
+            </ul>
+            <a href="/category/<%= category.title_category %>" class="stretched-link"></a>
+        </div>
         <% } %>
     </div>
 

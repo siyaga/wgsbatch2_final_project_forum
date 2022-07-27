@@ -124,7 +124,7 @@ app.get('/', async (req, res) => {
 
     const sql = "SELECT title_post,content, forum_category.title_category, forum_post.date, forum_post.image, tb_users.username, forum_post.time FROM forum_post " +
         "INNER JOIN forum_category ON forum_post.id_category = forum_category.id_category " +
-        "INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user ORDER BY forum_post.date DESC "
+        "INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user ORDER BY id_post DESC "
     pool.query(sql, [], (error, results) => {
 
         res.render('home', {
@@ -383,8 +383,6 @@ app.post('/reset', checkNotAuthenticated, kirim.array('image', 1), [
         });
 
     } else {
-        // addDataContact(req.body);
-        // addContact di postgre
         try {
             // Mengupdate isi form yang di isikan oleh user
             const id_user = req.body.id_user
@@ -517,9 +515,9 @@ app.get('/category', (req, res) => {
 app.get('/category/:title_category', (req, res) => {
     const title_category = req.params.title_category;
     // Mencari nama yang akan di edit lalu di masukan kedalam input di ejs
-    const sql = `SELECT title_post,content, forum_category.title_category, forum_post.date, forum_post.image, tb_users.username FROM forum_post 
+    const sql = `SELECT title_post,content, forum_category.title_category, forum_post.date, forum_post.image, tb_users.username, forum_post.time FROM forum_post 
     INNER JOIN forum_category ON forum_post.id_category = forum_category.id_category 
-    INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user where forum_category.title_category='${title_category}' ORDER BY date DESC`
+    INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user where forum_category.title_category='${title_category}' ORDER BY id_post DESC`
     pool.query(sql, (error, result) => {
         if (error) {
             throw error
@@ -545,10 +543,8 @@ app.get('/category/:title_category/post/:title_post', async (req, res) => {
     const title_post = req.params.title_post
     const cariIdForum = await getIdForum(title_post)
     const findId = cariIdForum.id_post;
-
     const ambilIdForum = await getSelectComment(findId)
-
-    const sql = `SELECT forum_post.id_post,tb_users.username,title_post,content,forum_post.date, forum_post.image FROM forum_post INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user WHERE title_post = '${title_post}'`;
+    const sql = `SELECT forum_post.id_post,tb_users.username,title_post,content,forum_post.date, forum_post.image, forum_post.time FROM forum_post INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user WHERE title_post = '${title_post}'`;
     pool.query(sql, (err, result) => {
         res.render('detail-forum', {
             title: `${title_post}`,
@@ -1912,7 +1908,7 @@ function getNameCategory(idCategory) {
 async function getPostName(titlePost) {
 
     try {
-        const sql = `SELECT forum_post.id_post,tb_users.username,title_post,content,forum_post.date, forum_post.image FROM forum_post INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user WHERE title_post = '${titlePost}'`
+        const sql = `SELECT forum_post.id_post,tb_users.username,title_post,content,forum_post.date, forum_post.image, forum_post.time FROM forum_post INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user WHERE title_post = '${titlePost}'`
         const query = await pool.query(sql)
         titlePost = query.rows[0]
 
