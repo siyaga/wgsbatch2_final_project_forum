@@ -797,7 +797,7 @@ app.get('/myforum', checkNotAuthenticated, async (req, res) => {
     const sql = `SELECT forum_post.id_post,forum_post.title_post,forum_category.title_category,forum_post.content,forum_post.date,
         forum_post.image,tb_users.username, tb_users.id_user FROM forum_post INNER JOIN forum_category ON forum_post.id_category =
          forum_category.id_category INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user 
-        ORDER BY forum_post.date DESC`
+        ORDER BY forum_post.id_post DESC`
 
     const myForumsByUsers = await getMyforumUser(req.user.id_user)
     pool.query(sql, [], (error, results) => {
@@ -1213,7 +1213,8 @@ app.get('/setting-category/delete/:title_category', checkNotAuthenticated, admin
     const title_category = req.params.title_category;
     const cariIdCategory = await getSelectAllCategory(title_category)
     const cariIdPost = await getPostCategory(cariIdCategory.id_category)
-    const getIdForums = await getIdForum(cariIdPost.title_post);
+    const getIdForums = await getIdForum(cariIdPost);
+
     const deleteComment = await deleteCommentPosting(cariIdPost.id_post)
     const hapusPostingUser = await deletePostingCategory(cariIdCategory.id_category)
     const deleteCategory = await deleteCategoryId(cariIdCategory.id_category)
@@ -1227,9 +1228,9 @@ app.get('/setting-category/delete/:title_category', checkNotAuthenticated, admin
         pool.query(`INSERT INTO public.logs(
             id_user, username, nama, activity)
         VALUES ( ${req.user.id_user}, '${req.user.username}','${req.user.nama}', 'Berhasil Melakukan Hapus Category : ${title_category}')`);
-        deleteComment
-        hapusPostingUser
-        deleteCategory
+        console.log(cariIdPost);
+        console.log(hapusPostingUser);
+        console.log(deleteCategory);
         req.flash('msg', `${title_category} berhasil di hapus`)
         res.redirect('/setting-category')
     }
@@ -1550,21 +1551,21 @@ app.get('/setting-user/delete/:username', checkNotAuthenticated, adminRoleIs, as
 
     const username = req.params.username;
     const cekIdUsername = await getIdUsername(username)
-    await deleteCommentUser(cekIdUsername.id_user)
-    await deletePostingUser(cekIdUsername.id_user)
-    await deleteCommentUserId(cekIdUsername.id_user)
+
+    const userDeleteComment = await deleteCommentUser(cekIdUsername.id_user)
+    const userDeletePosting = await deletePostingUser(cekIdUsername.id_user)
+    const userDelete = await deleteCommentUserId(cekIdUsername.id_user)
 
     if (!username) {
         res.status(404)
         res.send('<h1>404</h1>')
     }
-
-
-    // hapusCommentUser
-    // hapusPostingUser
     pool.query(`INSERT INTO public.logs(
         id_user, username, nama, activity)
         VALUES ( ${req.user.id_user}, '${req.user.username}','${req.user.nama}', 'Berhasil Melakukan Delete User : ${username}')`);
+    userDeleteComment
+    userDeletePosting
+    userDelete
     req.flash('msg', `${username} berhasil di hapus`)
     res.redirect('/setting-user')
 
@@ -1713,7 +1714,7 @@ async function getPostCategory(titleForum) {
     try {
         const sql = `SELECT * FROM forum_post WHERE id_category =${titleForum}`
         const query = await pool.query(sql)
-        titleForum = query.rows
+        titleForum = query.rows[0]
 
 
 
@@ -1745,6 +1746,24 @@ async function getIdUsername(idPostUsername) {
     return idPostUsername;
 }
 
+// Melakukan Query untuk Mencari id user
+async function getIdUser(idPostUsername) {
+    try {
+        const sql = `SELECT * FROM tb_users WHERE username ='${idPostUsername}' `
+        const query = await pool.query(sql)
+        idPostUsername = query.rows
+
+
+
+
+    } catch (err) {
+        console.error(err);
+
+    }
+
+    return idPostUsername;
+}
+
 // Melakukan delete di postingan berdasarkan user_id
 async function deletePostingUser(idUser) {
     try {
@@ -1752,7 +1771,7 @@ async function deletePostingUser(idUser) {
         WHERE id_user = ${idUser}`
 
         const query = await pool.query(sql)
-        idUser = query.rows[0]
+        idUser = query.rows
 
 
 
@@ -1764,12 +1783,12 @@ async function deletePostingUser(idUser) {
 
     return idUser;
 }
-// Melakukan delete di postingan berdasarkan user_id
+// Melakukan delete di Comment berdasarkan user_id
 async function deleteCommentUser(idUser) {
     try {
-        const sql = `DELETE FROM forum_comment WHERE id_user = ${idUser}`
+        const sql = `DELETE FROM forum_comment WHERE id_user =${idUser}`
         const query = await pool.query(sql)
-        idUser = query.rows[0]
+        idUser = query.rows
 
 
 
@@ -1781,12 +1800,13 @@ async function deleteCommentUser(idUser) {
 
     return idUser;
 }
+
 
 
 // Melakukan delete berdasarkan user
 async function deleteCommentPosting(idUser) {
     try {
-        const sql = `DELETE FROM forum_comment WHERE id_post = ${idUser}`
+        const sql = `DELETE FROM forum_comment WHERE id_post =${idUser}`
         const query = await pool.query(sql)
         idUser = query.rows[0]
 
@@ -1804,9 +1824,9 @@ async function deleteCommentPosting(idUser) {
 // Melakukan delete berdasarkan user
 async function deleteCommentUserId(idUser) {
     try {
-        const sql = `DELETE FROM tb_users WHERE id_user = ${idUser}`
+        const sql = `DELETE FROM tb_users WHERE id_user =${idUser}`
         const query = await pool.query(sql)
-        idUser = query.rows[0]
+        idUser = query.rows
 
 
 
@@ -1822,7 +1842,7 @@ async function deleteCommentUserId(idUser) {
 // Melakukan delete berdasarkan id_category
 async function deleteCategoryId(idCategory) {
     try {
-        const sql = `DELETE FROM forum_category WHERE id_category = ${idCategory}`
+        const sql = `DELETE FROM forum_category WHERE id_category =${idCategory}`
         const query = await pool.query(sql)
         idCategory = query.rows[0]
 
@@ -1840,7 +1860,7 @@ async function deleteCategoryId(idCategory) {
 // Melakukan delete di postingan berdasarkan id_category
 async function deletePostingCategory(idCatepory) {
     try {
-        const sql = `DELETE FROM forum_post WHERE id_category = ${idCatepory}`
+        const sql = `DELETE FROM forum_post WHERE id_category =${idCatepory}`
         const query = await pool.query(sql)
         idCatepory = query.rows[0]
 
