@@ -233,7 +233,7 @@ app.post('/register', kirim.array('image', 1), [
             } else {
                 image = req.files[0].filename
             }
-            const username = req.body.username;
+            const username = req.body.username.toLowerCase();
             const nama = req.body.nama;
             const email = req.body.email;
             const password = req.body.password;
@@ -1965,7 +1965,6 @@ async function getJumlahComment(idUser) {
     }
     return idUser;
 }
-
 // Function Membuat Middleware Login
 // Function Membuat Middleware Jika Tidak Login
 function checkAuthenticated(req, res, next) {
@@ -1982,7 +1981,6 @@ function checkNotAuthenticated(req, res, next) {
     res.redirect("/users/login");
 }
 // Function Membuat Middleware Role 
-
 function adminRoleIs(req, res, next) {
     if (req.user.role === "admin") {
         return next();
