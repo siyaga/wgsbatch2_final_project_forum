@@ -33,13 +33,6 @@
         </div>
     </div> -->
     <div class="mb-3">
-        <label for="image" class="form-label">Picture Image </label>
-
-        <input type="file" accept="image/png, image/jpeg, image/jpg" class="form-control" id="image" name="image">
-
-    </div>
-
-    <div class="mb-3">
         <label for="username" class="form-label">Username</label>
         <input type="text" class="form-control" id="username" aria-describedby="username" name="username"
             placeholder="Username" value="<%= isiData?.username %>" required>
@@ -59,10 +52,18 @@
         <input type="password" class="form-control" id="Password" name="password" placeholder="password" required>
     </div>
     <div class="mb-3">
-        <label for="Password2" class="form-label">Comfirm Password</label>
-        <input type="password" class="form-control" id="Password2" name="password2" placeholder="Comfirm Password"
+        <label for="Password2" class="form-label">confirm Password</label>
+        <input type="password" class="form-control" id="Password2" name="password2" placeholder="confirm Password"
             required>
     </div>
+
+    <div class="mb-3">
+        <label for="image" class="form-label">Picture Image </label>
+
+        <input type="file" accept="image/png, image/jpeg, image/jpg" class="form-control" id="image" name="image">
+
+    </div>
+
 
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>

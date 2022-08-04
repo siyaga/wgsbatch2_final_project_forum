@@ -122,10 +122,11 @@ function authUser(req) {
 // Proses Menuju Main Page
 app.get('/', async (req, res) => {
 
-    const sql = "SELECT title_post,content, forum_category.title_category, forum_post.date, forum_post.image, tb_users.username, forum_post.time FROM forum_post " +
+    const sql = "SELECT id_post,title_post,content, forum_category.title_category, forum_post.date, forum_post.image, tb_users.username, forum_post.time FROM forum_post " +
         "INNER JOIN forum_category ON forum_post.id_category = forum_category.id_category " +
         "INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user ORDER BY id_post DESC "
-    pool.query(sql, [], (error, results) => {
+
+    pool.query(sql, [], async (error, results) => {
 
         res.render('home', {
             title: "Ada Forum",
@@ -544,7 +545,9 @@ app.get('/category/:title_category/post/:title_post', async (req, res) => {
     const cariIdForum = await getIdForum(title_post)
     const findId = cariIdForum.id_post;
     const ambilIdForum = await getSelectComment(findId)
-    const sql = `SELECT forum_post.id_post,tb_users.username,title_post,content,forum_post.date, forum_post.image, forum_post.time FROM forum_post INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user WHERE title_post = '${title_post}'`;
+    const sql = `SELECT forum_post.id_post,tb_users.username,tb_users.username,title_post,content,forum_post.date, forum_post.image, forum_post.time FROM forum_post INNER JOIN tb_users ON forum_post.id_user = tb_users.id_user WHERE title_post = '${title_post}'`;
+    const jumlahComment = await getJumlahCommentForum(findId);
+
     pool.query(sql, (err, result) => {
         res.render('detail-forum', {
             title: `${title_post}`,
@@ -553,6 +556,7 @@ app.get('/category/:title_category/post/:title_post', async (req, res) => {
             titleCategory: title_category,
             users: authUser(req.user),
             comments: ambilIdForum,
+            jumlahComments: jumlahComment,
             moment: moment,
             capitalize: capitalize
         });
@@ -697,13 +701,12 @@ app.post('/setting-category/update', checkNotAuthenticated, [
     }) => {
         try {
 
-
+            const title_value = valueTitle.toLowerCase();
             // Mencari nama yang sama di query
-
-            const queryDuplikat = await pool.query(`SELECT * FROM forum_category WHERE title_category = '${valueTitle.toLowerCase()}'`)
+            const queryDuplikat = await pool.query(`SELECT * FROM forum_category WHERE title_category = '${title_value}'`)
             const duplikat = queryDuplikat.rows[0]
 
-            if (valueTitle !== req.body.oldCategory && duplikat) {
+            if (title_value !== req.body.oldCategory && duplikat) {
                 throw new Error(`Kategori ${valueTitle} sudah Digunakan! `);
 
             }
@@ -738,7 +741,7 @@ app.post('/setting-category/update', checkNotAuthenticated, [
 
 
         const oldCategory = req.body.oldCategory
-        const title_category = req.body.title_category
+        const title_category = req.body.title_category.toLowerCase()
 
         pool.query(`INSERT INTO public.logs(
             id_user, username, nama, activity)
@@ -1336,7 +1339,7 @@ app.post('/setting-user/register', checkNotAuthenticated, adminRoleIs, kirim.arr
     body('username').custom(async (valueUsername) => {
 
         // Mencari nama yang sama di query
-        const queryDuplikat = await pool.query(`SELECT * FROM tb_users WHERE username = '${valueUsername.toLowerCase()}'`)
+        const queryDuplikat = await pool.query(`SELECT * FROM tb_users WHERE username ='${valueUsername.toLowerCase()}'`)
         const duplikat = queryDuplikat.rows[0]
 
         if (duplikat) {
@@ -1444,12 +1447,12 @@ app.post('/setting-user/update', checkNotAuthenticated, adminRoleIs, kirim.array
     body('username').custom(async (valueUsername, {
         req
     }) => {
-
+        const username = valueUsername.toLowerCase()
         // Mencari nama yang sama di query
-        const queryDuplikat = await pool.query(`SELECT * FROM tb_users WHERE username = '${valueUsername.toLowerCase()}'`)
+        const queryDuplikat = await pool.query(`SELECT * FROM tb_users WHERE username ='${username}'`)
         const duplikat = queryDuplikat.rows[0]
 
-        if (valueUsername !== req.body.oldUsername && duplikat) {
+        if (username !== req.body.oldUsername && duplikat) {
             throw new Error(`${valueUsername} sudah terdaftar! `);
 
         }
@@ -1499,13 +1502,13 @@ app.post('/setting-user/update', checkNotAuthenticated, adminRoleIs, kirim.array
         // addContact di postgre
         try {
             // Mengupdate isi form yang di isikan oleh user
-            const oldUsername = req.body.oldUsername
+            const oldUsername = req.body.oldUsername.toLowerCase()
             const oldNama = req.body.oldNama
             const oldEmail = req.body.oldEmail
             const oldImage = req.body.oldImage
             const oldRole = req.body.oldRole
             const id_user = req.body.id_user
-            const username = req.body.username;
+            const username = req.body.username.toLowerCase();
             const nama = req.body.nama;
             const email = req.body.email;
             const password = req.body.password;
@@ -1533,7 +1536,7 @@ app.post('/setting-user/update', checkNotAuthenticated, adminRoleIs, kirim.array
 
             const updateData = await pool.query(`UPDATE public.tb_users
             SET  username='${username}', nama='${nama}', email='${email}', password='${passwordhash}', image='${image}', role='${role}'
-            WHERE id_user='${id_user}'`)
+            WHERE username='${oldUsername}'`)
             updateData;
             req.flash('msg', `Berhasil mengubah data ${username}`)
             res.redirect('/setting-user');
@@ -1621,7 +1624,7 @@ async function getMyforumUser(idUser) {
 
 async function getSelectComment(req) {
     try {
-        const sql = `SELECT forum_comment.id_comment,comment,forum_comment.date, forum_comment.time, tb_users.username,id_post FROM forum_comment INNER JOIN tb_users ON forum_comment.id_user = tb_users.id_user  WHERE id_post='${req}' ORDER BY forum_comment. date ASC`
+        const sql = `SELECT forum_comment.id_comment,comment,forum_comment.date, forum_comment.time, tb_users.username,id_post, tb_users.image FROM forum_comment INNER JOIN tb_users ON forum_comment.id_user = tb_users.id_user  WHERE id_post='${req}' ORDER BY forum_comment. date ASC`
         const query = await pool.query(sql)
         req = query.rows
 
@@ -1964,6 +1967,18 @@ async function getJumlahComment(idUser) {
         console.error(err)
     }
     return idUser;
+}
+
+//  Membuat jumlah comment postingan
+async function getJumlahCommentForum(idPostingan) {
+    try {
+        const jumlahForums = await pool.query(`SELECT * FROM forum_comment
+        where id_post=${idPostingan}`)
+        idPostingan = jumlahForums.rows
+    } catch (err) {
+        console.error(err)
+    }
+    return idPostingan;
 }
 // Function Membuat Middleware Login
 // Function Membuat Middleware Jika Tidak Login

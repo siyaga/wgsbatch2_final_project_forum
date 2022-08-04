@@ -36,7 +36,7 @@
             <td><%= user.nama %> </td>
             <td><%= user.email %> </td>
             <td>
-                <%= moment(user.date).format('YYYY-MM-DD') %> <%= user.time %>
+                <%= moment(user.date).format('YYYY-MM-DD') %> <%= moment(user.time).format('HH:mm') %>
             </td>
 
             <td>

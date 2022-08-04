@@ -19,6 +19,7 @@
 
 <form method="POST" action="/setting-user/update" class="mt-4" enctype="multipart/form-data">
     <input type="hidden" name="oldUsername" value="<%= selectUser.oldUsername || selectUser.username %>">
+    <%= selectUser.oldUsername %>
     <input type="hidden" name="oldNama" value="<%= selectUser.oldNama || selectUser.nama %>">
     <input type="hidden" name="oldEmail" value="<%= selectUser.oldEmail || selectUser.email %>">
     <input type="hidden" name="oldPassword" value="<%= selectUser.oldPassword || selectUser.password %>">
@@ -49,8 +50,8 @@
         <input type="password" class="form-control" id="Password" name="password" placeholder="password" required>
     </div>
     <div class="mb-3">
-        <label for="Password2" class="form-label">Comfirm Password</label>
-        <input type="password" class="form-control" id="Password2" name="password2" placeholder="Comfirm Password"
+        <label for="Password2" class="form-label">confirm Password</label>
+        <input type="password" class="form-control" id="Password2" name="password2" placeholder="confirm Password"
             required>
     </div>
 
